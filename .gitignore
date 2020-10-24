@@ -1,0 +1,11 @@
+# package directories
+node_modules
+jspm_packages
+.build
+.nyc_output
+.dynamodb
+.idea
+local-dynamodb/*.*
+
+# Serverless directories
+.serverless

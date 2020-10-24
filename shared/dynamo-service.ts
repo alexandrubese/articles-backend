@@ -2,7 +2,7 @@
 import { DynamoDB } from 'aws-sdk';
 
 export class DynamoService {
-    static instance: DynamoDB.DocumentClient;
+    private static instance: DynamoDB.DocumentClient;
 
     constructor() {
         if (!DynamoService.instance) {

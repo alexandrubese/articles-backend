@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
+    "target": "ESNext",
     "lib": [
-      "es6"
+      "ESNext"
     ],
     "moduleResolution": "node",
     "rootDir": "./",
@@ -15,6 +15,7 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "noImplicitReturns": true,
+    "noEmitHelpers": true,
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,

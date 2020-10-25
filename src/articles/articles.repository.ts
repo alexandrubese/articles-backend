@@ -73,7 +73,8 @@ export class ArticlesRepository {
         return { item: undefined };
       }
 
-      const articleComments = articlesResponse.Items?.filter(item => item.article_link_sk.includes('20')) as Comment[];
+      const articleComments = articlesResponse.Items?.filter(item =>
+        item.article_link_sk !== 'D' && item.article_link_sk !== '#') as Comment[];
 
       const article: Article = {
         ...articleDetails,

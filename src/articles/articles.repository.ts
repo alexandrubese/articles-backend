@@ -44,7 +44,7 @@ export class ArticlesRepository {
         await this.docClient.query(params).promise();
 
       const articles = articlesResponse.Items;
-      const result: GetArticlesResult = { articles: articles as (Article[] | undefined) };
+      const result: GetArticlesResult = { items: articles as (Article[] | undefined) };
 
       return result;
     } catch (e) {

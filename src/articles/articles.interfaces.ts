@@ -7,5 +7,5 @@ export interface Article {
 }
 
 export interface GetArticlesResult {
-  articles: Article[] | undefined;
+  items: Article[] | undefined;
 }

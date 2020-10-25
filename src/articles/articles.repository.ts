@@ -43,8 +43,7 @@ export class ArticlesRepository {
       const articlesResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
 
-      const articles = articlesResponse.Items;
-      const result: GetArticlesResult = { items: articles as (Article[] | undefined) };
+      const result: GetArticlesResult = { items: articlesResponse.Items as (Article[] | undefined) };
 
       return result;
     } catch (e) {

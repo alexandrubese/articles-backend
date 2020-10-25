@@ -20,11 +20,11 @@ var params = {
             AttributeType: 'S', // (S | N | B) for string, number, binary
         },
         {
-            AttributeName: 'link_pk',
+            AttributeName: 'article_link_pk',
             AttributeType: 'S', // (S | N | B) for string, number, binary
         },
         {
-            AttributeName: 'link_sk',
+            AttributeName: 'article_link_sk',
             AttributeType: 'S', // (S | N | B) for string, number, binary
         }
         // ... more attributes ...
@@ -38,11 +38,11 @@ var params = {
             IndexName: 'gsi1_idx',
             KeySchema: [
                 { // Required HASH type attribute
-                    AttributeName: 'link_pk',
+                    AttributeName: 'article_link_pk',
                     KeyType: 'HASH',
                 },
                 { // Optional RANGE key type for HASH + RANGE secondary indexes
-                    AttributeName: 'link_sk',
+                    AttributeName: 'article_link_sk',
                     KeyType: 'RANGE',
                 }
             ],

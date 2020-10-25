@@ -10,6 +10,22 @@ export class ArticlesRepository {
     this.docClient = docClient;
   }
 
+  constructArticleTagParams = (articleId: string): DynamoDB.DocumentClient.QueryInput => {
+    return {
+      TableName: 'test_articles',
+      IndexName: 'gsi1_idx',
+      KeyConditionExpression: '#article_link_pk = :val and begins_with(#article_link_sk, :hash)',
+      ExpressionAttributeNames: {
+        '#article_link_pk': 'article_link_pk',
+        '#article_link_sk': 'article_link_sk'
+      },
+      ExpressionAttributeValues: {
+        ':val': articleId,
+        ':hash': '#'
+      }
+    };
+  };
+
   public async getArticles(): Promise<GetArticlesResult> {
     try {
       // eslint-disable
@@ -24,9 +40,11 @@ export class ArticlesRepository {
         }
       };
 
-      const articles: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+      const articlesResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
-      const result: GetArticlesResult = { articles: articles.Items as (Article[] | undefined) };
+
+      const articles = articlesResponse.Items;
+      const result: GetArticlesResult = { articles: articles as (Article[] | undefined) };
 
       return result;
     } catch (e) {

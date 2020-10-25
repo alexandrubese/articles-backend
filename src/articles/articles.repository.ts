@@ -28,7 +28,6 @@ export class ArticlesRepository {
 
   public async getArticles(): Promise<GetArticlesResult> {
     try {
-      // eslint-disable
       const params: DynamoDB.DocumentClient.QueryInput = {
         TableName: 'test_articles',
         KeyConditionExpression: '#entities = :val',

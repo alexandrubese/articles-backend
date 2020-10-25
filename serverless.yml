@@ -145,6 +145,19 @@ functions:
           method: get
           cors: true
 
+  getArticle:
+    handler: src/articles/articles.getArticle
+    description: Returns an article based on Id
+    memorySize: 128
+    timeout: 10
+    environment:
+      DEFAULT_COUNTRY: Romania
+
+    events:
+      - http:
+          path: getArticle/{articleId}
+          method: get
+          cors: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

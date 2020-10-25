@@ -11,3 +11,4 @@ const service: ArticlesService = new ArticlesService(repo);
 const controller: ArticlesController = new ArticlesController(service);
 
 export const getArticles: ApiHandler = controller.getArticles;
+export const getArticle: ApiHandler = controller.getArticle;

@@ -1,11 +1,30 @@
-export interface Article {
+export interface ArticleDetails {
   entities: string;
   entities_sort: string;
-  link_pk: string;
+  article_link_sk: string;
+  article_link_pk: string;
   title: string;
   body: string;
+  tags: string[];
+}
+
+export interface Article extends ArticleDetails {
+  comments: Comment[]
+}
+
+export interface Comment {
+  article_link_sk: string;
+  article_link_pk: string;
+  entities_sort: string;
+  body: string;
+  entities: string;
+  author: string;
 }
 
 export interface GetArticlesResult {
   items: Article[] | undefined;
+}
+
+export interface GetArticleResult {
+  item: Article | undefined;
 }

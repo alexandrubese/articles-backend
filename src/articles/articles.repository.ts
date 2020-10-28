@@ -61,7 +61,8 @@ export class ArticlesRepository {
         },
         ExpressionAttributeValues: {
           ':val': articleId,
-        }
+        },
+        ScanIndexForward: false,
       };
 
       const articlesResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =

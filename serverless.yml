@@ -172,6 +172,20 @@ functions:
           path: getArticlesByTag/{tagId}
           method: get
           cors: true
+
+  putComment:
+    handler: src/comments/comments.putComments
+    description: Insert a new comment
+    memorySize: 128
+    timeout: 10
+    environment:
+      DEFAULT_COUNTRY: Romania
+
+    events:
+      - http:
+          path: comment/{articleId}
+          method: post
+          cors: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

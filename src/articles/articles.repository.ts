@@ -214,7 +214,8 @@ export class ArticlesRepository {
       const result: GetArticlesResult = articles;
       return result;
     } catch (e) {
-      return e;
+      console.log('Error ocurred in repo fn getRelatedArticlesByTags, throwing up one level');
+      throw e;
     }
   }
 }

@@ -43,7 +43,8 @@ export class ArticlesService {
 
       return result;
     } catch (e) {
-      return e;
+      console.log('Article service, getRelatedArticlesByTags:', e);
+      throw e;
     }
   }
 }

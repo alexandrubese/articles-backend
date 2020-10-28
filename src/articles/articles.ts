@@ -13,3 +13,4 @@ const controller: ArticlesController = new ArticlesController(service);
 export const getArticles: ApiHandler = controller.getArticles;
 export const getArticle: ApiHandler = controller.getArticle;
 export const getArticlesByTag: ApiHandler = controller.getArticlesByTag;
+export const getRelatedArticlesByTags: ApiHandler = controller.getRelatedArticlesByTags;

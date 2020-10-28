@@ -173,6 +173,20 @@ functions:
           method: get
           cors: true
 
+  getRelatedArticlesByTags:
+    handler: src/articles/articles.getRelatedArticlesByTags
+    description: Get related articles by tags
+    memorySize: 128
+    timeout: 10
+    environment:
+      DEFAULT_COUNTRY: Romania
+
+    events:
+      - http:
+          path: getRelatedArticlesByTags/{articleId}
+          method: post
+          cors: true
+
   putComment:
     handler: src/comments/comments.putComments
     description: Insert a new comment

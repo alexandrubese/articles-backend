@@ -36,7 +36,8 @@ export class ArticlesRepository {
         },
         ExpressionAttributeValues: {
           ':val': 'ARTICLE',
-        }
+        },
+        Limit: 5
       };
 
       const articlesResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
@@ -90,43 +91,127 @@ export class ArticlesRepository {
     }
   }
 
-  public async getArticlesByTag(tagId: string): Promise<GetArticlesResult> {
+  public async getArticlePreview(articleId: string): Promise<GetArticleResult> {
     try {
       const params: DynamoDB.DocumentClient.QueryInput = {
         TableName: 'test_articles',
-        KeyConditionExpression: '#entities = :val',
+        IndexName: 'gsi1_idx',
+        KeyConditionExpression: '#article_link_pk = :val and #article_link_sk = :vall',
         ExpressionAttributeNames: {
-          '#entities': 'entities'
+          '#article_link_pk': 'article_link_pk',
+          '#article_link_sk': 'article_link_sk'
         },
         ExpressionAttributeValues: {
-          ':val': tagId,
+          ':val': articleId,
+          ':vall': 'D'
         },
-        Limit: 3
+        ReturnConsumedCapacity: 'TOTAL'
       };
 
-      const tagsResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+      const articlesResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
 
-      const articlePromises =
-        tagsResponse.Items?.map(tagResponse => this.getArticle(tagResponse.article_link_pk));
+      const articleDetails = articlesResponse.Items?.find(item => item.article_link_sk === 'D') as ArticleDetails;
+
+      if (!articleDetails) {
+        return { item: undefined };
+      }
+
+      const result: GetArticleResult = { item: articleDetails as Article };
+      return result;
+
+    } catch (e) {
+      return e;
+    }
+  }
+
+  public constructGetRelatedArticlesParams(tagId: string) {
+    const params: DynamoDB.DocumentClient.QueryInput = {
+      TableName: 'test_articles',
+      KeyConditionExpression: '#entities = :val',
+      ExpressionAttributeNames: {
+        '#entities': 'entities'
+      },
+      ExpressionAttributeValues: {
+        ':val': tagId,
+      },
+    };
+    return params;
+  }
+
+  public async getRelatedArticlesByTags(aId: string, tags: string[]): Promise<GetArticlesResult> {
+    try {
+      const getRelatedPromises = tags.map(tag => this.docClient.query(this.constructGetRelatedArticlesParams(tag)).promise());
+      const getTagArticlesResponse = await Promise.all(getRelatedPromises);
+
+      const relatedArticleIdOccurence = {};
+
+      // Going through all tags(and the articles assigned to them), counting each article id ocurence in the tags
+      // We want to return the related articles as the articles most occured in the tags of the current article 
+      getTagArticlesResponse.forEach(response => {
+        const tagArticles = response.Items;
+        if (tagArticles) {
+          tagArticles.forEach(article => {
+            if (relatedArticleIdOccurence[article.article_link_pk]) {
+              relatedArticleIdOccurence[article.article_link_pk].count++;
+            } else {
+              relatedArticleIdOccurence[article.article_link_pk] = { count: 1, date: article.entities_sort };
+            }
+          });
+        }
+      });
+
+      delete relatedArticleIdOccurence[aId]; //deleting current article from list
+
+      /*
+      relatedArticleIdOccurence['p8e406b7-5a5f-4050-b456-b672960ed7a0'] = { count: 5, date: '2020-03-04' };
+      */
+      const articleIdsToBeSorted = [];
+
+      //Creating an array that can be sorted from the object
+      Object.entries(relatedArticleIdOccurence).map(([key, value]) => {
+        articleIdsToBeSorted.push({ 'articleId': key, ...value as Object });
+      });
+
+      //Sorting by count, then by date
+      articleIdsToBeSorted.sort((a, b) => {
+        if (a.count > b.count) {
+          return -1;
+        } else if (a.count < b.count) {
+          return 1;
+        }
+        const date1 = new Date(a.date);
+        const date2 = new Date(a.date);
+
+        if (date1.getTime() > date2.getTime()) {
+          return -1;
+        } else if (date1.getTime() < date2.getTime()) {
+          return 1;
+        }
+        return 0;
+      });
+
+      const relatedArticles = articleIdsToBeSorted.slice(0, 3); //getting only the first 3 elements 
+
+      const articlePreviewPromises =
+        relatedArticles.map(relatedArticle => this.getArticlePreview(relatedArticle.articleId));
 
       const articles: GetArticlesResult = { items: [] };
-      if (!articlePromises) {
+      if (!articlePreviewPromises) {
         return articles;
       }
-      const articleDetails = await Promise.all(articlePromises);
-      if (!articleDetails) {
+      const articlePreviews = await Promise.all(articlePreviewPromises);
+      if (!articlePreviews) {
         return articles;
       }
 
-      articleDetails.forEach(articleDetail => {
-        if (articleDetail.item) {
-          articles.items?.push(articleDetail.item);
+      articlePreviews.forEach(articlePreview => {
+        if (articlePreview.item) {
+          articles.items?.push(articlePreview.item);
         }
       });
 
       const result: GetArticlesResult = articles;
-
       return result;
     } catch (e) {
       return e;

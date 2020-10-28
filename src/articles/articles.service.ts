@@ -36,4 +36,14 @@ export class ArticlesService {
       return e;
     }
   }
+
+  public async getRelatedArticlesByTags(articleId: string, tags: string[]): Promise<GetArticlesResult> {
+    try {
+      const result: GetArticlesResult = await this.repo.getRelatedArticlesByTags(articleId, tags);
+
+      return result;
+    } catch (e) {
+      return e;
+    }
+  }
 }

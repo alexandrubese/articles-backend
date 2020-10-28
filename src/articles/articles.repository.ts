@@ -88,4 +88,47 @@ export class ArticlesRepository {
       return e;
     }
   }
+
+  public async getArticlesByTag(tagId: string): Promise<GetArticlesResult> {
+    try {
+      const params: DynamoDB.DocumentClient.QueryInput = {
+        TableName: 'test_articles',
+        KeyConditionExpression: '#entities = :val',
+        ExpressionAttributeNames: {
+          '#entities': 'entities'
+        },
+        ExpressionAttributeValues: {
+          ':val': tagId,
+        },
+        Limit: 3
+      };
+
+      const tagsResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+        await this.docClient.query(params).promise();
+
+      const articlePromises =
+        tagsResponse.Items?.map(tagResponse => this.getArticle(tagResponse.article_link_pk));
+
+      const articles: GetArticlesResult = { items: [] };
+      if (!articlePromises) {
+        return articles;
+      }
+      const articleDetails = await Promise.all(articlePromises);
+      if (!articleDetails) {
+        return articles;
+      }
+
+      articleDetails.forEach(articleDetail => {
+        if (articleDetail.item) {
+          articles.items?.push(articleDetail.item);
+        }
+      });
+
+      const result: GetArticlesResult = articles;
+
+      return result;
+    } catch (e) {
+      return e;
+    }
+  }
 }

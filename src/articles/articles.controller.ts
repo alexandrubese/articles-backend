@@ -2,7 +2,7 @@ import {
   ApiCallback, ApiContext, ApiEvent, ApiHandler
 } from '../../shared/api.interfaces';
 import { ErrorCode } from '../../shared/error-codes';
-import { ErrorResult, ForbiddenResult, NotFoundResult } from '../../shared/errors';
+import { handleError } from '../../shared/error-handler';
 import { ResponseBuilder } from '../../shared/response-builder';
 import { GetArticleResult, GetArticlesResult } from './articles.interfaces';
 import { ArticlesService } from './articles.service';
@@ -21,16 +21,7 @@ export class ArticlesController {
 
       return ResponseBuilder.ok<GetArticlesResult>(result, callback);
     } catch (e) {
-      const error: ErrorResult = e;
-      if (error instanceof NotFoundResult) {
-        return ResponseBuilder.notFound(error.code, error.description, callback);
-      }
-
-      if (error instanceof ForbiddenResult) {
-        return ResponseBuilder.forbidden(error.code, error.description, callback);
-      }
-
-      return ResponseBuilder.internalServerError(error, callback);
+      return handleError(e, callback);
     }
   }
 
@@ -47,16 +38,7 @@ export class ArticlesController {
       return ResponseBuilder.ok<GetArticleResult>(result, callback);
 
     } catch (e) {
-      const error: ErrorResult = e;
-      if (error instanceof NotFoundResult) {
-        return ResponseBuilder.notFound(error.code, error.description, callback);
-      }
-
-      if (error instanceof ForbiddenResult) {
-        return ResponseBuilder.forbidden(error.code, error.description, callback);
-      }
-
-      return ResponseBuilder.internalServerError(error, callback);
+      return handleError(e, callback);
     }
   }
 
@@ -81,17 +63,7 @@ export class ArticlesController {
 
       return ResponseBuilder.ok<GetArticlesResult>(result, callback);
     } catch (e) {
-      //TODO: Refactor this and re-use in all controller functions
-      const error: ErrorResult = e;
-      if (error instanceof NotFoundResult) {
-        return ResponseBuilder.notFound(error.code, error.description, callback);
-      }
-
-      if (error instanceof ForbiddenResult) {
-        return ResponseBuilder.forbidden(error.code, error.description, callback);
-      }
-
-      return ResponseBuilder.internalServerError(error, callback);
+      return handleError(e, callback);
     }
   }
 

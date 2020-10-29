@@ -2,7 +2,7 @@ import {
   ApiCallback, ApiContext, ApiEvent, ApiHandler
 } from '../../shared/api.interfaces';
 import { ErrorCode } from '../../shared/error-codes';
-import { ErrorResult, ForbiddenResult, NotFoundResult } from '../../shared/errors';
+import { handleError } from '../../shared/error-handler';
 import { ResponseBuilder } from '../../shared/response-builder';
 import { CommentInputs, PutCommentResult } from './comments.interfaces';
 import { CommentsService } from './comments.service';
@@ -35,16 +35,7 @@ export class CommentsController {
 
       return ResponseBuilder.ok<PutCommentResult>(result, callback);
     } catch (e) {
-      const error: ErrorResult = e;
-      if (error instanceof NotFoundResult) {
-        return ResponseBuilder.notFound(error.code, error.description, callback);
-      }
-
-      if (error instanceof ForbiddenResult) {
-        return ResponseBuilder.forbidden(error.code, error.description, callback);
-      }
-
-      return ResponseBuilder.internalServerError(error, callback);
+      return handleError(e, callback);
     }
   }
 }

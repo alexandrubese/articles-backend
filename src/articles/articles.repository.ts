@@ -144,7 +144,8 @@ export class ArticlesRepository {
 
   public async getRelatedArticlesByTags(aId: string, tags: string[]): Promise<GetArticlesResult> {
     try {
-      const getRelatedPromises = tags.map(tag => this.docClient.query(this.constructGetRelatedArticlesParams(tag)).promise());
+      const getRelatedPromises = tags.map(tag =>
+        this.docClient.query(this.constructGetRelatedArticlesParams(tag)).promise());
       const getTagArticlesResponse = await Promise.all(getRelatedPromises);
 
       const relatedArticleIdOccurence = {};

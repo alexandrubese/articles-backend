@@ -60,30 +60,6 @@ export class ArticlesController {
     }
   }
 
-  public getArticlesByTag: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
-    Promise<void> => {
-    try {
-      if (!event || !event.pathParameters || !event.pathParameters.tagId) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please specify the tag ID!', callback);
-      }
-      const { tagId } = event.pathParameters;
-      const result: GetArticlesResult = await this.service.getArticlesByTag(tagId);
-
-      return ResponseBuilder.ok<GetArticlesResult>(result, callback);
-    } catch (e) {
-      const error: ErrorResult = e;
-      if (error instanceof NotFoundResult) {
-        return ResponseBuilder.notFound(error.code, error.description, callback);
-      }
-
-      if (error instanceof ForbiddenResult) {
-        return ResponseBuilder.forbidden(error.code, error.description, callback);
-      }
-
-      return ResponseBuilder.internalServerError(error, callback);
-    }
-  }
-
   public getRelatedArticlesByTags: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
     Promise<void> => {
     try {
@@ -98,7 +74,7 @@ export class ArticlesController {
       const { articleId } = event.pathParameters;
       const tags = JSON.parse(event.body);
       if (!tags.tags) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please supply {tags :[]} for getArticlesByTag!', callback);
+        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Supply {tags :[]} for getArticlesByTag!', callback);
       }
 
       const result: GetArticlesResult = await this.service.getRelatedArticlesByTags(articleId, tags.tags);

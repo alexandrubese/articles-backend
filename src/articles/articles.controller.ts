@@ -105,6 +105,7 @@ export class ArticlesController {
 
       return ResponseBuilder.ok<GetArticlesResult>(result, callback);
     } catch (e) {
+      //TODO: Refactor this and re-use in all controller functions
       const error: ErrorResult = e;
       if (error instanceof NotFoundResult) {
         return ResponseBuilder.notFound(error.code, error.description, callback);

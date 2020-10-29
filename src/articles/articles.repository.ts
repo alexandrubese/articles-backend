@@ -47,7 +47,8 @@ export class ArticlesRepository {
 
       return result;
     } catch (e) {
-      return e;
+      console.log('Error in Article repo fn getArticles, throwing error up one level');
+      throw e;
     }
   }
 
@@ -87,7 +88,8 @@ export class ArticlesRepository {
       return result;
 
     } catch (e) {
-      return e;
+      console.log('Error in Article repo fn getArticle, throwing error up one level');
+      throw e;
     }
   }
 
@@ -121,7 +123,8 @@ export class ArticlesRepository {
       return result;
 
     } catch (e) {
-      return e;
+      console.log('Error in Article repo fn getArticlePreview, throwing error up one level');
+      throw e;
     }
   }
 
@@ -214,7 +217,7 @@ export class ArticlesRepository {
       const result: GetArticlesResult = articles;
       return result;
     } catch (e) {
-      console.log('Error ocurred in repo fn getRelatedArticlesByTags, throwing up one level');
+      console.log('Error in Article repo fn getRelatedArticlesByTags, throwing error up one level');
       throw e;
     }
   }

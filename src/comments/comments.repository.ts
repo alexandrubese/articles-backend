@@ -35,7 +35,8 @@ export class CommentsRepository {
 
       return result;
     } catch (e) {
-      return e;
+      console.log('Error in Comments repo fn putComment, throwing error up one level');
+      throw e;
     }
   }
 }

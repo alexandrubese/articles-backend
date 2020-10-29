@@ -13,7 +13,8 @@ export class ArticlesService {
 
       return result;
     } catch (e) {
-      return e;
+      console.log('Article service, getArticles:', e);
+      throw e;
     }
   }
 
@@ -23,17 +24,8 @@ export class ArticlesService {
 
       return result;
     } catch (e) {
-      return e;
-    }
-  }
-
-  public async getArticlesByTag(articleId: string): Promise<GetArticlesResult> {
-    try {
-      const result: GetArticlesResult = await this.repo.getArticlesByTag(articleId);
-
-      return result;
-    } catch (e) {
-      return e;
+      console.log('Article service, getArticle:', e);
+      throw e;
     }
   }
 

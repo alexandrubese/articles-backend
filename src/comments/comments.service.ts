@@ -13,7 +13,8 @@ export class CommentsService {
 
       return result;
     } catch (e) {
-      return e;
+      console.log('Comments Service fn putComment:', e);
+      throw e;
     }
   }
 }

@@ -1,7 +1,8 @@
 import { AWSError, DynamoDB } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Article, ArticleDetails, Comment, GetArticleResult, GetArticlesResult, RelatedArticle, RelatedArticleData } from './articles.interfaces';
+import { Article, ArticleDetails, GetArticleResult, GetArticlesResult, RelatedArticle } from './articles.interfaces';
+import { Comment } from '../comments/comments.interfaces';
 
 export class ArticlesRepository {
   private readonly docClient: DocumentClient;

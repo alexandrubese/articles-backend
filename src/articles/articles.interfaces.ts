@@ -1,3 +1,5 @@
+import { Comment } from '../comments/comments.interfaces';
+
 export interface ArticleDetails {
   entities: string;
   entities_sort: string;
@@ -9,7 +11,7 @@ export interface ArticleDetails {
 }
 
 export interface Article extends ArticleDetails {
-  comments: Comment[]
+  comments: Comment[];
 }
 
 export interface RelatedArticle extends RelatedArticleData {
@@ -19,15 +21,6 @@ export interface RelatedArticle extends RelatedArticleData {
 export interface RelatedArticleData {
   count: number;
   date: string;
-}
-
-export interface Comment {
-  article_link_sk: string;
-  article_link_pk: string;
-  entities_sort: string;
-  body: string;
-  entities: string;
-  author: string;
 }
 
 export interface GetArticlesResult {

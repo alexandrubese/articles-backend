@@ -1,7 +1,7 @@
 import { AWSError, DynamoDB } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Article, ArticleDetails, Comment, GetArticleResult, GetArticlesResult } from './articles.interfaces';
+import { Article, ArticleDetails, Comment, GetArticleResult, GetArticlesResult, RelatedArticle, RelatedArticleData } from './articles.interfaces';
 
 export class ArticlesRepository {
   private readonly docClient: DocumentClient;
@@ -148,37 +148,37 @@ export class ArticlesRepository {
         this.docClient.query(this.constructGetRelatedArticlesParams(tag)).promise());
       const getTagArticlesResponse = await Promise.all(getRelatedPromises);
 
-      const relatedArticleIdOccurence = {};
+      const relatedArticles: RelatedArticle[] = [];
 
       // Going through all tags(and the articles assigned to them), counting each article id ocurence in the tags
       // We want to return the related articles as the articles most occured in the tags of the current article 
       getTagArticlesResponse.forEach(response => {
         const tagArticles = response.Items;
+
         if (tagArticles) {
           tagArticles.forEach(article => {
-            if (relatedArticleIdOccurence[article.article_link_pk]) {
-              relatedArticleIdOccurence[article.article_link_pk].count++;
+            const relatedArticle = relatedArticles.find(el => el.articleId === article.article_link_pk);
+
+            if (relatedArticle) {
+              relatedArticle.count += 1;
             } else {
-              relatedArticleIdOccurence[article.article_link_pk] = { count: 1, date: article.entities_sort };
+              // Do not add the article for which we get the related articles
+              if (article.article_link_pk !== aId) {
+                const newRelatedArticle: RelatedArticle = {
+                  articleId: article.article_link_pk,
+                  count: 1,
+                  date: article.entities_sort
+                };
+
+                relatedArticles.push(newRelatedArticle);
+              }
             }
           });
         }
       });
 
-      delete relatedArticleIdOccurence[aId]; //deleting current article from list
-
-      /*
-      relatedArticleIdOccurence['p8e406b7-5a5f-4050-b456-b672960ed7a0'] = { count: 5, date: '2020-03-04' };
-      */
-      const articleIdsToBeSorted = [];
-
-      //Creating an array that can be sorted from the object
-      Object.entries(relatedArticleIdOccurence).map(([key, value]) => {
-        articleIdsToBeSorted.push({ 'articleId': key, ...value as Object });
-      });
-
       //Sorting by count, then by date
-      articleIdsToBeSorted.sort((a, b) => {
+      relatedArticles.sort((a, b) => {
         if (a.count > b.count) {
           return -1;
         } else if (a.count < b.count) {
@@ -195,10 +195,9 @@ export class ArticlesRepository {
         return 0;
       });
 
-      const relatedArticles = articleIdsToBeSorted.slice(0, 3); //getting only the first 3 elements 
-
-      const articlePreviewPromises =
-        relatedArticles.map(relatedArticle => this.getArticlePreview(relatedArticle.articleId));
+      const previewedArticles: RelatedArticle[] = relatedArticles.slice(0, 3); //getting only the first 3 elements 
+      const articlePreviewPromises: Promise<GetArticleResult>[] =
+        previewedArticles.map(previewArticle => this.getArticlePreview(previewArticle.articleId));
 
       const articles: GetArticlesResult = { items: [] };
       if (!articlePreviewPromises) {

@@ -183,7 +183,7 @@ functions:
 
     events:
       - http:
-          path: getRelatedArticlesByTags/{articleId}
+          path: getRelatedArticlesByTags
           method: post
           cors: true
 

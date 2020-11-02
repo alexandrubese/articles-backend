@@ -4,6 +4,8 @@ import {
 import { ErrorCode } from '../../shared/error-codes';
 import { handleError } from '../../shared/error-handler';
 import { ResponseBuilder } from '../../shared/response-builder';
+import { SubjectType } from '../../shared/validators/error.interface';
+import { validate } from '../../shared/validators/validator';
 import { CommentInputs, PutCommentResult } from './comments.interfaces';
 import { CommentsService } from './comments.service';
 
@@ -27,8 +29,15 @@ export class CommentsController {
       const { articleId } = event.pathParameters;
       const comment = JSON.parse(event.body) as CommentInputs;
 
-      if (!comment.author || !comment.body) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Incomplete comment information!', callback);
+      const commentFields: SubjectType[] = [
+        { field: 'author', type: 'string' },
+        { field: 'body', type: 'string' }
+      ];
+
+      const errors = validate(comment, commentFields);
+      if (errors.length) {
+        return ResponseBuilder.badRequest(
+          ErrorCode.InvalidInput, 'The object supplied has some errors', callback, errors);
       }
 
       const result: PutCommentResult = await this.service.putComment(articleId, comment);

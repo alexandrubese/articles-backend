@@ -1,4 +1,4 @@
-import { GetArticleResult, GetArticlesResult } from './articles.interfaces';
+import { ArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
 import { ArticlesRepository } from './articles.repository';
 
 export class ArticlesService {
@@ -36,6 +36,17 @@ export class ArticlesService {
       return result;
     } catch (e) {
       console.log('Article service, getRelatedArticlesByTags:', e);
+      throw e;
+    }
+  }
+
+  public async createArticle(article: ArticleInputs): Promise<GetArticleResult> {
+    try {
+      const result: GetArticleResult = await this.repo.createArticle(article);
+
+      return result;
+    } catch (e) {
+      console.log('Comments Service fn putComment:', e);
       throw e;
     }
   }

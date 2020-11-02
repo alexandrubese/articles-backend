@@ -187,6 +187,20 @@ functions:
           method: post
           cors: true
 
+  createArticle:
+    handler: src/articles/articles.createArticle
+    description: Create a new Article
+    memorySize: 128
+    timeout: 10
+    environment:
+      DEFAULT_COUNTRY: Romania
+
+    events:
+      - http:
+          path: articles
+          method: post
+          cors: true
+
   putComment:
     handler: src/comments/comments.putComments
     description: Insert a new comment

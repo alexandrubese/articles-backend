@@ -9,8 +9,8 @@ import { HttpStatusCode } from './http-status-codes';
  * Contains helper methods to generate a HTTP response.
  */
 export class ResponseBuilder {
-  public static badRequest(code: string, description: string, callback: ApiCallback): void {
-    const errorResult: BadRequestResult = new BadRequestResult(code, description);
+  public static badRequest(code: string, description: string, callback: ApiCallback, errors?: object[]): void {
+    const errorResult: BadRequestResult = new BadRequestResult(code, description, errors);
     ResponseBuilder.returnAs<BadRequestResult>(errorResult, HttpStatusCode.BadRequest, callback);
   }
 

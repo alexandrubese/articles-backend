@@ -1,13 +1,16 @@
 import { Comment } from '../comments/comments.interfaces';
 
-export interface ArticleDetails {
+export interface ArticleInputs {
+  title: string;
+  body: string;
+  tags: string[];
+}
+
+export interface ArticleDetails extends ArticleInputs {
   entities: string;
   entities_sort: string;
   article_link_sk: string;
   article_link_pk: string;
-  title: string;
-  body: string;
-  tags: string[];
 }
 
 export interface Article extends ArticleDetails {

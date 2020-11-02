@@ -1,8 +1,16 @@
 import { AWSError, DynamoDB } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { Article, ArticleDetails, GetArticleResult, GetArticlesResult, RelatedArticle } from './articles.interfaces';
+import {
+  Article,
+  ArticleDetails,
+  ArticleInputs,
+  GetArticleResult,
+  GetArticlesResult,
+  RelatedArticle
+} from './articles.interfaces';
 import { Comment } from '../comments/comments.interfaces';
+import { uuid } from 'uuidv4';
 
 export class ArticlesRepository {
   private readonly docClient: DocumentClient;
@@ -219,6 +227,36 @@ export class ArticlesRepository {
       return result;
     } catch (e) {
       console.log('Error in Article repo fn getRelatedArticlesByTags, throwing error up one level');
+      throw e;
+    }
+  }
+
+  public async createArticle(article: ArticleInputs): Promise<GetArticleResult> {
+    try {
+      const params: DynamoDB.DocumentClient.PutItemInput = {
+        TableName: 'test_articles',
+        Item: {
+          'entities': 'ARTICLE',
+          'entities_sort': new Date().toISOString(),
+          'article_link_pk': uuid(),
+          'article_link_sk': 'D',
+          'title': article.title,
+          'body': article.body,
+          'tags': article.tags
+        }
+      };
+
+      const createArticleResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+        await this.docClient.put(params).promise();
+
+      if (!createArticleResponse) {
+        return { item: undefined };
+      }
+      const result: GetArticleResult = { item: params.Item as (Article | undefined) };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Comments repo fn putComment, throwing error up one level');
       throw e;
     }
   }

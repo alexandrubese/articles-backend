@@ -242,6 +242,20 @@ functions:
           path: tagArticle
           method: post
           cors: true
+
+  deleteTag:
+    handler: src/tags/tags.deleteTag
+    description: Deletes a tag and its relationship
+    memorySize: 128
+    timeout: 10
+    environment:
+      DEFAULT_COUNTRY: Romania
+
+    events:
+      - http:
+          path: tags/{tagId}
+          method: delete
+          cors: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

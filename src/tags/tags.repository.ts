@@ -2,6 +2,7 @@ import { AWSError, DynamoDB } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import {
+  DeleteTagResult,
   GetTagArticleResult,
   GetTagResult,
   Tag,
@@ -39,7 +40,7 @@ export class TagsRepository {
 
       return result;
     } catch (e) {
-      console.log('Error in Comments repo fn putComment, throwing error up one level');
+      console.log('Error in Tags repo fn createTag, throwing error up one level');
       throw e;
     }
   }
@@ -66,7 +67,36 @@ export class TagsRepository {
 
       return result;
     } catch (e) {
-      console.log('Error in Comments repo fn putComment, throwing error up one level');
+      console.log('Error in Tags repo fn createTagArticle, throwing error up one level');
+      throw e;
+    }
+  }
+
+  public async deleteTag(tagId: string): Promise<DeleteTagResult> {
+    try {
+      const params: DynamoDB.DocumentClient.DeleteItemInput = {
+        TableName: 'test_articles',
+        Key: {
+          'entities': 'TAG',
+          'entities_sort': tagId
+        }
+      };
+
+      const createTagArticleResponse: PromiseResult<DynamoDB.DocumentClient.DeleteItemOutput, AWSError> =
+        await this.docClient.delete(params).promise();
+
+      if (!createTagArticleResponse) {
+        return { item: undefined };
+      }
+      const result: DeleteTagResult = { item: 'Tag deleted successfully' };
+
+      // cleanup, 
+      // 1. delete all tag relations and 
+      // 2. remove from all articles tags property 
+
+      return result;
+    } catch (e) {
+      console.log('Error in Tags repo fn deleteTag, throwing error up one level');
       throw e;
     }
   }

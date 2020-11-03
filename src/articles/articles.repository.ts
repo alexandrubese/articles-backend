@@ -257,7 +257,7 @@ export class ArticlesRepository {
 
       return result;
     } catch (e) {
-      console.log('Error in Comments repo fn putComment, throwing error up one level');
+      console.log('Error in Article repo fn createArticle, throwing error up one level');
       throw e;
     }
   }

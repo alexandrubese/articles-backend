@@ -46,7 +46,7 @@ export class ArticlesService {
 
       return result;
     } catch (e) {
-      console.log('Comments Service fn putComment:', e);
+      console.log('Articles Service fn createArticle:', e);
       throw e;
     }
   }

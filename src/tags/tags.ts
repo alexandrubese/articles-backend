@@ -12,3 +12,4 @@ const controller: TagsController = new TagsController(service);
 
 export const createTag: ApiHandler = controller.createTag;
 export const createTagArticle: ApiHandler = controller.createTagArticle;
+export const deleteTag: ApiHandler = controller.deleteTag;

@@ -6,7 +6,7 @@ import { handleError } from '../../shared/error-handler';
 import { ResponseBuilder } from '../../shared/response-builder';
 import { SubjectType } from '../../shared/validators/error.interface';
 import { validate } from '../../shared/validators/validator';
-import { GetTagArticleResult, GetTagResult, TagArticleInputs, TagInputs } from './tags.interfaces';
+import { DeleteTagResult, GetTagArticleResult, GetTagResult, TagArticleInputs, TagInputs } from './tags.interfaces';
 import { TagsService } from './tags.service';
 
 export class TagsController {
@@ -67,6 +67,23 @@ export class TagsController {
       const result: GetTagArticleResult = await this.service.createTagArticle(tagArticle);
 
       return ResponseBuilder.ok<GetTagArticleResult>(result, callback);
+    } catch (e) {
+      return handleError(e, callback);
+    }
+  }
+
+  public deleteTag: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
+    Promise<void> => {
+    try {
+      if (!event || !event.pathParameters || !event.pathParameters.tagId) {
+        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please specify the tag ID!', callback);
+      }
+
+      const { tagId } = event.pathParameters;
+
+      const result: DeleteTagResult = await this.service.deleteTag(tagId);
+
+      return ResponseBuilder.ok<DeleteTagResult>(result, callback);
     } catch (e) {
       return handleError(e, callback);
     }

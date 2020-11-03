@@ -1,4 +1,4 @@
-import { GetTagArticleResult, GetTagResult, TagArticleInputs, TagInputs } from './tags.interfaces';
+import { DeleteTagResult, GetTagArticleResult, GetTagResult, TagArticleInputs, TagInputs } from './tags.interfaces';
 import { TagsRepository } from './tags.repository';
 
 export class TagsService {
@@ -13,7 +13,7 @@ export class TagsService {
 
       return result;
     } catch (e) {
-      console.log('Comments Service fn putComment:', e);
+      console.log('Tags Service fn createTag:', e);
       throw e;
     }
   }
@@ -24,7 +24,18 @@ export class TagsService {
 
       return result;
     } catch (e) {
-      console.log('Comments Service fn putComment:', e);
+      console.log('Tags Service fn createTagArticle:', e);
+      throw e;
+    }
+  }
+
+  public async deleteTag(tagId: string): Promise<DeleteTagResult> {
+    try {
+      const result: DeleteTagResult = await this.repo.deleteTag(tagId);
+
+      return result;
+    } catch (e) {
+      console.log('Tags Service fn deleteTag:', e);
       throw e;
     }
   }

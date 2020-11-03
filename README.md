@@ -17,10 +17,25 @@ For local development:
 
 
 Things to do: 
+0. Implement deleteTagRelation(tag_id, article_date)
+
 1. Cleanup after tag delete (delete from article tags and then delete all relations)
-    - first get all the relations based on tagid in a variable "tagRelations" go through all articles in the list based on article id, make the updates, afterwards use the same "tagRelations" object and create delete promises for each element
+    - first get all the relations based on tagid in a variable "tagRelations" go through all articles in the list based on article id, make the updates, afterwards use the same "tagRelations" object and create delete promises for each element using the deleteTagRelation(tag_id, article_date)
+    
 2. Edit Article (and update of tags property on article + relationships after ) - 
-    - 1st Approach : update the tags property, then delete + or add new ones based on GSI1PK and GSISK where : article_link_pk= articleId, and article_link_sk = #, data needs to be changed: article_link_sk = #tag_id from #, check implications! also check nr. 2
+    - 1st Approach : update the tags property, then delete + or add new ones based on GSI1PK and GSISK where : article_link_pk= articleId, and article_link_sk = #, this will give you all the lines for tag relations for this article, 
+    { entities: tagId,
+      entities_sort: article_date,
+      article_link_pk: article_id,
+      article_link_sk: '#' }
+
+    Use deleteTagRelation(tag_id, article_date) based on the object to delete relations for removed tags, for added tags, just use the createTagArticles() using:
+    { field: 'article_id', type: 'string' },
+    { field: 'tag_id', type: 'string' },
+    { field: 'article_date', type: 'string' }
+    
+    
+    #data needs to be changed: article_link_sk = #tag_id from #, check implications! also check nr. 2
 
     -2nd Approach: for updating relationships on update return all_old (old data), you will have the new data on post, make a diff between them and make the updates accordingly( add/delete ) you might already have the tagRelations object fetched and can use it to add/delete ones so nr.1 is not necesary
 3. Delete comment endpoint

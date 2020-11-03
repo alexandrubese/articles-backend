@@ -261,4 +261,34 @@ export class ArticlesRepository {
       throw e;
     }
   }
+
+  public async updateNewTagsArticle(articleDate: string, tags: string[]): Promise<GetArticleResult> {
+    try {
+      const params: DynamoDB.DocumentClient.UpdateItemInput = {
+        TableName: 'test_articles',
+        Key: {
+          'entities': 'ARTICLE',
+          'entities_sort': articleDate
+        },
+        UpdateExpression: 'SET tags = :tags',
+        ExpressionAttributeValues: {
+          ':tags': tags
+        },
+        ReturnValues: 'UPDATED_NEW'
+      };
+
+      const updateTagResponse: PromiseResult<DynamoDB.DocumentClient.UpdateItemOutput, AWSError> =
+        await this.docClient.update(params).promise();
+
+      if (!updateTagResponse) {
+        return { item: undefined };
+      }
+      const result: GetArticleResult = { item: updateTagResponse.Attributes as (Article | undefined) };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Article repo fn updateNewTagsArticle, throwing error up one level');
+      throw e;
+    }
+  }
 }

@@ -58,7 +58,7 @@ export class ArticlesController {
       const articleFields: SubjectType[] = [
         { field: 'title', type: 'string' },
         { field: 'body', type: 'string' },
-        { field: 'tags', type: 'array' },
+        //   { field: 'tags', type: 'object' },
       ];
 
       const article = JSON.parse(event.body) as ArticleInputs;
@@ -70,7 +70,7 @@ export class ArticlesController {
       }
 
       const result: GetArticleResult = await this.service.createArticle(article);
-
+      /*
       // Creating tagArticle relation
       if (result.item && result.item.tags) {
         const article = result.item;
@@ -90,7 +90,7 @@ export class ArticlesController {
           throw new Error(`Failed to create tagArticle relations for Article: ${article.article_link_pk}`);
         }
       }
-
+*/
       return ResponseBuilder.ok<GetArticleResult>(result, callback);
 
     } catch (e) {

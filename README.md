@@ -17,11 +17,14 @@ For local development:
 
 
 Things to do: 
-0. Implement deleteTagRelation(tag_id, article_date)
+0. Implement deleteTagRelation(tag_id, article_date) - Done
+0.1 Implement tags to be a string set on article instead of list
 
 1. Cleanup after tag delete (delete from article tags and then delete all relations)
     - first get all the relations based on tagid in a variable "tagRelations" go through all articles in the list based on article id, make the updates, afterwards use the same "tagRelations" object and create delete promises for each element using the deleteTagRelation(tag_id, article_date)
-    
+
+    delete all tags by tagId:
+
 2. Edit Article (and update of tags property on article + relationships after ) - 
     - 1st Approach : update the tags property, then delete + or add new ones based on GSI1PK and GSISK where : article_link_pk= articleId, and article_link_sk = #, this will give you all the lines for tag relations for this article, 
     { entities: tagId,

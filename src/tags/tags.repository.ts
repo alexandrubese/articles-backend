@@ -4,6 +4,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import {
   DeleteTagResult,
   GetTagArticleResult,
+  GetTagArticlesResult,
   GetTagResult,
   Tag,
   TagArticle,
@@ -90,13 +91,62 @@ export class TagsRepository {
       }
       const result: DeleteTagResult = { item: 'Tag deleted successfully' };
 
-      // cleanup, 
-      // 1. delete all tag relations and 
-      // 2. remove from all articles tags property 
-
       return result;
     } catch (e) {
       console.log('Error in Tags repo fn deleteTag, throwing error up one level');
+      throw e;
+    }
+  }
+
+  public async deleteTagRelation(tagId: string, articleDate: string): Promise<DeleteTagResult> {
+    try {
+      const params: DynamoDB.DocumentClient.DeleteItemInput = {
+        TableName: 'test_articles',
+        Key: {
+          'entities': tagId,
+          'entities_sort': articleDate
+        }
+      };
+
+      const createTagArticleResponse: PromiseResult<DynamoDB.DocumentClient.DeleteItemOutput, AWSError> =
+        await this.docClient.delete(params).promise();
+
+      if (!createTagArticleResponse) {
+        return { item: undefined };
+      }
+      const result: DeleteTagResult = { item: 'TagRelation deleted successfully' };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Tags repo fn deleteTagRelation, throwing error up one level');
+      throw e;
+    }
+  }
+
+  public async getTagArticles(tagId: string): Promise<GetTagArticlesResult> {
+    try {
+      const params: DynamoDB.DocumentClient.QueryInput = {
+        TableName: 'test_articles',
+        KeyConditionExpression: '#entities = :val',
+        ExpressionAttributeNames: {
+          '#entities': 'entities'
+        },
+        ExpressionAttributeValues: {
+          ':val': tagId,
+        },
+      };
+
+      const getTagArticleResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+        await this.docClient.query(params).promise();
+
+      if (!getTagArticleResponse) {
+        return { items: undefined };
+      }
+      const result: GetTagArticlesResult = { items: getTagArticleResponse.Items as (TagArticle[] | undefined) };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Tags repo fn getTagArticles, throwing error up one level');
       throw e;
     }
   }

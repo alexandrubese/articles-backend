@@ -32,6 +32,10 @@ export interface GetTagArticleResult {
   item: TagArticle | undefined;
 }
 
+export interface GetTagArticlesResult {
+  items: TagArticle[] | undefined;
+}
+
 export interface DeleteTagResult {
   item: string | undefined;
 }

@@ -4,10 +4,12 @@ import { TagsRepository } from './tags.repository';
 import { TagsService } from './tags.service';
 import { DynamoService } from '../../shared/dynamo-service';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { ArticlesRepository } from '../articles/articles.repository';
 
 const docClient: DocumentClient = new DynamoService().getInstance();
 const repo: TagsRepository = new TagsRepository(docClient);
-const service: TagsService = new TagsService(repo);
+const articlesRepo: ArticlesRepository = new ArticlesRepository(docClient);
+const service: TagsService = new TagsService(repo, articlesRepo);
 const controller: TagsController = new TagsController(service);
 
 export const createTag: ApiHandler = controller.createTag;

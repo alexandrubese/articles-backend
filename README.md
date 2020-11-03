@@ -14,3 +14,11 @@ The serverlesUser profile is linked in the serverless.yml file, so if you change
 For local development:
 1. start the local-dynamodb: npm run local-dynamodb
 2. start the local serverless instance: npm start (or your debug configuration with "npm start" for debugging)
+
+
+Things to do: 
+1. Cleanup after tag delete (delete all relations, update all article tags)
+2. Edit Article (and update of tags property on article + relationships after )
+3. Delete comment endpoint
+4. Edit tag
+5. Delete Article (maintain all relationships, just change an "active" flag to false)

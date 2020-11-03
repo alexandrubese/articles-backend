@@ -6,14 +6,18 @@ import { handleError } from '../../shared/error-handler';
 import { ResponseBuilder } from '../../shared/response-builder';
 import { SubjectType } from '../../shared/validators/error.interface';
 import { validate } from '../../shared/validators/validator';
+import { TagArticleInputs } from '../tags/tags.interfaces';
+import { TagsService } from '../tags/tags.service';
 import { ArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
 import { ArticlesService } from './articles.service';
 
 export class ArticlesController {
   private readonly service: ArticlesService;
+  private readonly tagsService: TagsService;
 
-  constructor(service: ArticlesService) {
+  constructor(service: ArticlesService, tagsService: TagsService) {
     this.service = service;
+    this.tagsService = tagsService;
   }
 
   public getArticles: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
@@ -66,6 +70,26 @@ export class ArticlesController {
       }
 
       const result: GetArticleResult = await this.service.createArticle(article);
+
+      // Creating tagArticle relation
+      if (result.item && result.item.tags) {
+        const article = result.item;
+        const createdArticleTags = article.tags;
+
+        const createTagArticlePromises = createdArticleTags.map(tag => {
+          const tagArticle: TagArticleInputs = {
+            article_id: article.article_link_pk,
+            article_date: article.entities_sort,
+            tag_id: tag
+          };
+          return this.tagsService.createTagArticle(tagArticle);
+        });
+
+        const createTagArticleResult = await Promise.all(createTagArticlePromises);
+        if (!createTagArticleResult) {
+          throw new Error(`Failed to create tagArticle relations for Article: ${article.article_link_pk}`);
+        }
+      }
 
       return ResponseBuilder.ok<GetArticleResult>(result, callback);
 

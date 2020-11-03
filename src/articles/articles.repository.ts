@@ -233,11 +233,12 @@ export class ArticlesRepository {
 
   public async createArticle(article: ArticleInputs): Promise<GetArticleResult> {
     try {
+      const creationDate = new Date().toISOString();
       const params: DynamoDB.DocumentClient.PutItemInput = {
         TableName: 'test_articles',
         Item: {
           'entities': 'ARTICLE',
-          'entities_sort': new Date().toISOString(),
+          'entities_sort': creationDate,
           'article_link_pk': uuid(),
           'article_link_sk': 'D',
           'title': article.title,
@@ -253,6 +254,8 @@ export class ArticlesRepository {
         return { item: undefined };
       }
       const result: GetArticleResult = { item: params.Item as (Article | undefined) };
+
+
 
       return result;
     } catch (e) {

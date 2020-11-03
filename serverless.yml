@@ -214,6 +214,34 @@ functions:
           path: comment/{articleId}
           method: post
           cors: true
+
+  createTag:
+    handler: src/tags/tags.createTag
+    description: Create a new tag
+    memorySize: 128
+    timeout: 10
+    environment:
+      DEFAULT_COUNTRY: Romania
+
+    events:
+      - http:
+          path: tags
+          method: post
+          cors: true
+
+  createTagArticle:
+    handler: src/tags/tags.createTagArticle
+    description: Create a new tag article relationship
+    memorySize: 128
+    timeout: 10
+    environment:
+      DEFAULT_COUNTRY: Romania
+
+    events:
+      - http:
+          path: tagArticle
+          method: post
+          cors: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

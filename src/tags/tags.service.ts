@@ -1,6 +1,13 @@
-import { GetArticleResult, GetArticlesResult } from '../articles/articles.interfaces';
+import { GetArticleResult } from '../articles/articles.interfaces';
 import { ArticlesRepository } from '../articles/articles.repository';
-import { DeleteTagResult, GetTagArticleResult, GetTagArticlesResult, GetTagResult, TagArticleInputs, TagInputs } from './tags.interfaces';
+import {
+  DeleteTagResult,
+  GetTagArticleResult,
+  GetTagArticlesResult,
+  GetTagResult,
+  TagArticleInputs,
+  TagInputs
+} from './tags.interfaces';
 import { TagsRepository } from './tags.repository';
 
 export class TagsService {
@@ -51,8 +58,8 @@ export class TagsService {
 
         // Going through articlePreviews
         if (articlePreviews) {
-          const updateTagsPromises: any[] = [];
-          const deleteAllTagRelationsPromises: any[] = [];
+          const updateTagsPromises: Promise<GetArticleResult>[] = [];
+          const deleteAllTagRelationsPromises: Promise<DeleteTagResult>[] = [];
 
           articlePreviews.forEach(article => {
             // Nesting in Tags

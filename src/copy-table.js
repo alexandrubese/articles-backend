@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 var copy = require('copy-dynamodb-table').copy;
 
 var globalAWSConfig = { // AWS Configuration object http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property

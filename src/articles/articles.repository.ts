@@ -1,6 +1,5 @@
 import { AWSError, DynamoDB } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import {
   Article,
   ArticleDetails,
@@ -11,15 +10,16 @@ import {
 } from './articles.interfaces';
 import { Comment } from '../comments/comments.interfaces';
 import { uuid } from 'uuidv4';
+import { unmarshal } from '../../shared/helper-functions';
 
 export class ArticlesRepository {
-  private readonly docClient: DocumentClient;
+  private readonly docClient: DynamoDB;
 
-  constructor(docClient: DocumentClient) {
+  constructor(docClient: DynamoDB) {
     this.docClient = docClient;
   }
 
-  constructArticleTagParams = (articleId: string): DynamoDB.DocumentClient.QueryInput => {
+  constructArticleTagParams = (articleId: string): DynamoDB.QueryInput => {
     return {
       TableName: 'test_articles',
       IndexName: 'gsi1_idx',
@@ -29,30 +29,38 @@ export class ArticlesRepository {
         '#article_link_sk': 'article_link_sk'
       },
       ExpressionAttributeValues: {
-        ':val': articleId,
-        ':hash': '#'
+        ':val': {
+          S: articleId
+        },
+        ':hash': {
+          S: '#'
+        }
       }
     };
   };
 
   public async getArticles(): Promise<GetArticlesResult> {
     try {
-      const params: DynamoDB.DocumentClient.QueryInput = {
+      const params: DynamoDB.QueryInput = {
         TableName: 'test_articles',
         KeyConditionExpression: '#entities = :val',
         ExpressionAttributeNames: {
           '#entities': 'entities'
         },
         ExpressionAttributeValues: {
-          ':val': 'ARTICLE',
+          ':val': {
+            S: 'ARTICLE'
+          },
         },
         Limit: 5
       };
 
-      const articlesResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+      const articlesResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
 
-      const result: GetArticlesResult = { items: articlesResponse.Items as (Article[] | undefined) };
+      const articles = unmarshal(articlesResponse.Items) as Article[];
+
+      const result: GetArticlesResult = { items: articles };
 
       return result;
     } catch (e) {
@@ -63,7 +71,7 @@ export class ArticlesRepository {
 
   public async getArticle(articleId: string): Promise<GetArticleResult> {
     try {
-      const params: DynamoDB.DocumentClient.QueryInput = {
+      const params: DynamoDB.QueryInput = {
         TableName: 'test_articles',
         IndexName: 'gsi1_idx',
         KeyConditionExpression: '#article_link_pk = :val',
@@ -71,21 +79,24 @@ export class ArticlesRepository {
           '#article_link_pk': 'article_link_pk'
         },
         ExpressionAttributeValues: {
-          ':val': articleId,
+          ':val': {
+            S: articleId
+          }
         },
         ScanIndexForward: false,
       };
 
-      const articlesResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+      const articlesResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
 
-      const articleDetails = articlesResponse.Items?.find(item => item.article_link_sk === 'D') as ArticleDetails;
+      const articleItems = unmarshal(articlesResponse.Items);
+      const articleDetails = articleItems.find(item => item.article_link_sk === 'D') as ArticleDetails;
 
       if (!articleDetails) {
         return { item: undefined };
       }
 
-      const articleComments = articlesResponse.Items?.filter(item =>
+      const articleComments = articleItems.filter(item =>
         item.article_link_sk !== 'D' && item.article_link_sk !== '#') as Comment[];
 
       const article: Article = {
@@ -104,7 +115,7 @@ export class ArticlesRepository {
 
   public async getArticlePreview(articleId: string): Promise<GetArticleResult> {
     try {
-      const params: DynamoDB.DocumentClient.QueryInput = {
+      const params: DynamoDB.QueryInput = {
         TableName: 'test_articles',
         IndexName: 'gsi1_idx',
         KeyConditionExpression: '#article_link_pk = :val and #article_link_sk = :vall',
@@ -113,16 +124,17 @@ export class ArticlesRepository {
           '#article_link_sk': 'article_link_sk'
         },
         ExpressionAttributeValues: {
-          ':val': articleId,
-          ':vall': 'D'
+          ':val': { S: articleId },
+          ':vall': { S: 'D' }
         },
         ReturnConsumedCapacity: 'TOTAL'
       };
 
-      const articlesResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+      const articlesResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
 
-      const articleDetails = articlesResponse.Items?.find(item => item.article_link_sk === 'D') as ArticleDetails;
+      const articleItems = unmarshal(articlesResponse.Items);
+      const articleDetails = articleItems.find(item => item.article_link_sk === 'D') as ArticleDetails;
 
       if (!articleDetails) {
         return { item: undefined };
@@ -138,14 +150,14 @@ export class ArticlesRepository {
   }
 
   public constructGetRelatedArticlesParams(tagId: string) {
-    const params: DynamoDB.DocumentClient.QueryInput = {
+    const params: DynamoDB.QueryInput = {
       TableName: 'test_articles',
       KeyConditionExpression: '#entities = :val',
       ExpressionAttributeNames: {
         '#entities': 'entities'
       },
       ExpressionAttributeValues: {
-        ':val': tagId,
+        ':val': { S: tagId },
       },
     };
     return params;
@@ -162,7 +174,7 @@ export class ArticlesRepository {
       // Going through all tags(and the articles assigned to them), counting each article id ocurence in the tags
       // We want to return the related articles as the articles most occured in the tags of the current article 
       getTagArticlesResponse.forEach(response => {
-        const tagArticles = response.Items;
+        const tagArticles = unmarshal(response.Items);
 
         if (tagArticles) {
           tagArticles.forEach(article => {
@@ -234,26 +246,29 @@ export class ArticlesRepository {
   public async createArticle(article: ArticleInputs): Promise<GetArticleResult> {
     try {
       const creationDate = new Date().toISOString();
-      const params: DynamoDB.DocumentClient.PutItemInput = {
+      const params: DynamoDB.PutItemInput = {
         TableName: 'test_articles',
         Item: {
-          'entities': 'ARTICLE',
-          'entities_sort': creationDate,
-          'article_link_pk': uuid(),
-          'article_link_sk': 'D',
-          'title': article.title,
-          'body': article.body,
-          'tags': article.tags
+          'entities': { S: 'ARTICLE' },
+          'entities_sort': { S: creationDate },
+          'article_link_pk': { S: uuid() },
+          'article_link_sk': { S: 'D' },
+          'title': { S: article.title },
+          'body': { S: article.body },
+          'tags': { SS: article.tags }
         }
       };
 
-      const createArticleResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
-        await this.docClient.put(params).promise();
+      const createArticleResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
+        await this.docClient.putItem(params).promise();
+
+      const createdArticle: Article = unmarshal([params.Item]);
 
       if (!createArticleResponse) {
         return { item: undefined };
       }
-      const result: GetArticleResult = { item: params.Item as (Article | undefined) };
+
+      const result: GetArticleResult = { item: createdArticle as (Article | undefined) };
 
       return result;
     } catch (e) {
@@ -264,30 +279,64 @@ export class ArticlesRepository {
 
   public async updateNewTagsArticle(articleDate: string, tags: string[]): Promise<GetArticleResult> {
     try {
-      const params: DynamoDB.DocumentClient.UpdateItemInput = {
+      const params: DynamoDB.UpdateItemInput = {
         TableName: 'test_articles',
         Key: {
-          'entities': 'ARTICLE',
-          'entities_sort': articleDate
+          'entities': { S: 'ARTICLE' },
+          'entities_sort': { S: articleDate }
         },
         UpdateExpression: 'SET tags = :tags',
         ExpressionAttributeValues: {
-          ':tags': tags
+          ':tags': { SS: tags }
         },
         ReturnValues: 'UPDATED_NEW'
       };
 
-      const updateTagResponse: PromiseResult<DynamoDB.DocumentClient.UpdateItemOutput, AWSError> =
-        await this.docClient.update(params).promise();
+      const updateTagResponse: PromiseResult<DynamoDB.UpdateItemOutput, AWSError> =
+        await this.docClient.updateItem(params).promise();
 
+
+      const updatedTag = unmarshal([updateTagResponse.Attributes]) as (Article | undefined);
       if (!updateTagResponse) {
         return { item: undefined };
       }
-      const result: GetArticleResult = { item: updateTagResponse.Attributes as (Article | undefined) };
+      const result: GetArticleResult = { item: updatedTag as (Article | undefined) };
 
       return result;
     } catch (e) {
       console.log('Error in Article repo fn updateNewTagsArticle, throwing error up one level');
+      throw e;
+    }
+  }
+
+  public async removeArticleTag(articleDate: string, tagId: string): Promise<GetArticleResult> {
+    try {
+      const params: DynamoDB.UpdateItemInput = {
+        TableName: 'test_articles',
+        Key: {
+          'entities': { S: 'ARTICLE' },
+          'entities_sort': { S: articleDate }
+        },
+        UpdateExpression: 'DELETE tags :tag',
+        ExpressionAttributeValues: {
+          ':tag': { SS: [tagId] }
+        },
+        ReturnValues: 'ALL_NEW'
+      };
+
+      const updateTagResponse: PromiseResult<DynamoDB.UpdateItemOutput, AWSError> =
+        await this.docClient.updateItem(params).promise();
+
+
+      const updatedTag = unmarshal([updateTagResponse.Attributes]) as (Article | undefined);
+      if (!updateTagResponse) {
+        return { item: undefined };
+      }
+      const result: GetArticleResult = { item: updatedTag as (Article | undefined) };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Article repo fn removeArticleTag, throwing error up one level');
       throw e;
     }
   }

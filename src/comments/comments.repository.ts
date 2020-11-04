@@ -1,37 +1,39 @@
 import { AWSError, DynamoDB } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { Comment, CommentInputs, PutCommentResult } from './comments.interfaces';
 import { uuid } from 'uuidv4';
+import { unmarshal } from '../../shared/helper-functions';
 
 export class CommentsRepository {
-  private readonly docClient: DocumentClient;
+  private readonly docClient: DynamoDB;
 
-  constructor(docClient: DocumentClient) {
+  constructor(docClient: DynamoDB) {
     this.docClient = docClient;
   }
 
   public async putComment(articleId: string, comment: CommentInputs): Promise<PutCommentResult> {
     try {
-      const params: DynamoDB.DocumentClient.PutItemInput = {
+      const params: DynamoDB.PutItemInput = {
         TableName: 'test_articles',
         Item: {
-          'entities': 'COMMENT',
-          'entities_sort': uuid(),
-          'article_link_pk': articleId,
-          'article_link_sk': new Date().toISOString(),
-          'author': comment.author,
-          'body': comment.body
+          'entities': { S: 'COMMENT' },
+          'entities_sort': { S: uuid() },
+          'article_link_pk': { S: articleId },
+          'article_link_sk': { S: new Date().toISOString() },
+          'author': { S: comment.author },
+          'body': { S: comment.body }
         }
       };
 
-      const putCommentResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
-        await this.docClient.put(params).promise();
+      const putCommentResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
+        await this.docClient.putItem(params).promise();
+
+      const commentItems: Comment = unmarshal([params.Item]) as Comment;
 
       if (!putCommentResponse) {
         return { item: undefined };
       }
-      const result: PutCommentResult = { item: params.Item as (Comment | undefined) };
+      const result: PutCommentResult = { item: commentItems };
 
       return result;
     } catch (e) {

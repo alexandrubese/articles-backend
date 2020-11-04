@@ -1,6 +1,5 @@
 import { AWSError, DynamoDB } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import {
   DeleteTagResult,
   GetTagArticleResult,
@@ -12,32 +11,35 @@ import {
   TagInputs
 } from './tags.interfaces';
 import { uuid } from 'uuidv4';
+import { unmarshal } from '../../shared/helper-functions';
 
 export class TagsRepository {
-  private readonly docClient: DocumentClient;
+  private readonly docClient: DynamoDB;
 
-  constructor(docClient: DocumentClient) {
+  constructor(docClient: DynamoDB) {
     this.docClient = docClient;
   }
 
   public async createTag(tag: TagInputs): Promise<GetTagResult> {
     try {
-      const params: DynamoDB.DocumentClient.PutItemInput = {
+      const params: DynamoDB.PutItemInput = {
         TableName: 'test_articles',
         Item: {
-          'entities': 'TAG',
-          'entities_sort': uuid(),
-          'title': tag.title
+          'entities': { S: 'TAG' },
+          'entities_sort': { S: uuid() },
+          'title': { S: tag.title }
         }
       };
 
-      const createTagResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
-        await this.docClient.put(params).promise();
+      const createTagResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
+        await this.docClient.putItem(params).promise();
+
+      const createdTag: Tag = unmarshal([params.Item]) as Tag;
 
       if (!createTagResponse) {
         return { item: undefined };
       }
-      const result: GetTagResult = { item: params.Item as (Tag | undefined) };
+      const result: GetTagResult = { item: createdTag };
 
       return result;
     } catch (e) {
@@ -48,23 +50,25 @@ export class TagsRepository {
 
   public async createTagArticle(tagArticle: TagArticleInputs): Promise<GetTagArticleResult> {
     try {
-      const params: DynamoDB.DocumentClient.PutItemInput = {
+      const params: DynamoDB.PutItemInput = {
         TableName: 'test_articles',
         Item: {
-          'entities': tagArticle.tag_id,
-          'entities_sort': tagArticle.article_date,
-          'article_link_pk': tagArticle.article_id,
-          'article_link_sk': '#'
+          'entities': { S: tagArticle.tag_id },
+          'entities_sort': { S: tagArticle.article_date },
+          'article_link_pk': { S: tagArticle.article_id },
+          'article_link_sk': { S: '#' }
         }
       };
 
-      const createTagArticleResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
-        await this.docClient.put(params).promise();
+      const createTagArticleResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
+        await this.docClient.putItem(params).promise();
+
+      const createdTagArticle: TagArticle = unmarshal([params.Item]) as TagArticle;
 
       if (!createTagArticleResponse) {
         return { item: undefined };
       }
-      const result: GetTagArticleResult = { item: params.Item as (TagArticle | undefined) };
+      const result: GetTagArticleResult = { item: createdTagArticle };
 
       return result;
     } catch (e) {
@@ -75,16 +79,16 @@ export class TagsRepository {
 
   public async deleteTag(tagId: string): Promise<DeleteTagResult> {
     try {
-      const params: DynamoDB.DocumentClient.DeleteItemInput = {
+      const params: DynamoDB.DeleteItemInput = {
         TableName: 'test_articles',
         Key: {
-          'entities': 'TAG',
-          'entities_sort': tagId
+          'entities': { S: 'TAG' },
+          'entities_sort': { S: tagId }
         }
       };
 
-      const createTagArticleResponse: PromiseResult<DynamoDB.DocumentClient.DeleteItemOutput, AWSError> =
-        await this.docClient.delete(params).promise();
+      const createTagArticleResponse: PromiseResult<DynamoDB.DeleteItemOutput, AWSError> =
+        await this.docClient.deleteItem(params).promise();
 
       if (!createTagArticleResponse) {
         return { item: undefined };
@@ -100,16 +104,16 @@ export class TagsRepository {
 
   public async deleteTagRelation(tagId: string, articleDate: string): Promise<DeleteTagResult> {
     try {
-      const params: DynamoDB.DocumentClient.DeleteItemInput = {
+      const params: DynamoDB.DeleteItemInput = {
         TableName: 'test_articles',
         Key: {
-          'entities': tagId,
-          'entities_sort': articleDate
+          'entities': { S: tagId },
+          'entities_sort': { S: articleDate }
         }
       };
 
-      const createTagArticleResponse: PromiseResult<DynamoDB.DocumentClient.DeleteItemOutput, AWSError> =
-        await this.docClient.delete(params).promise();
+      const createTagArticleResponse: PromiseResult<DynamoDB.DeleteItemOutput, AWSError> =
+        await this.docClient.deleteItem(params).promise();
 
       if (!createTagArticleResponse) {
         return { item: undefined };
@@ -125,24 +129,26 @@ export class TagsRepository {
 
   public async getTagArticles(tagId: string): Promise<GetTagArticlesResult> {
     try {
-      const params: DynamoDB.DocumentClient.QueryInput = {
+      const params: DynamoDB.QueryInput = {
         TableName: 'test_articles',
         KeyConditionExpression: '#entities = :val',
         ExpressionAttributeNames: {
           '#entities': 'entities'
         },
         ExpressionAttributeValues: {
-          ':val': tagId,
+          ':val': { S: tagId },
         },
       };
 
-      const getTagArticleResponse: PromiseResult<DynamoDB.DocumentClient.QueryOutput, AWSError> =
+      const getTagArticleResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
+
+      const tagArticles: TagArticle[] = unmarshal(getTagArticleResponse.Items) as TagArticle[];
 
       if (!getTagArticleResponse) {
         return { items: undefined };
       }
-      const result: GetTagArticlesResult = { items: getTagArticleResponse.Items as (TagArticle[] | undefined) };
+      const result: GetTagArticlesResult = { items: tagArticles };
 
       return result;
     } catch (e) {

@@ -2,11 +2,11 @@
 import { DynamoDB } from 'aws-sdk';
 
 export class DynamoService {
-    private static instance: DynamoDB.DocumentClient;
+    private static instance: DynamoDB;
 
     constructor() {
         if (!DynamoService.instance) {
-            DynamoService.instance = new DynamoDB.DocumentClient({
+            DynamoService.instance = new DynamoDB({
                 accessKeyId: 'fakeaccesskey', // Needed to connect to localdb
                 endpoint: 'http://localhost:8002',
                 region: 'localhost',

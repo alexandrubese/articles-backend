@@ -3,10 +3,10 @@ import { TagsController } from './tags.controller';
 import { TagsRepository } from './tags.repository';
 import { TagsService } from './tags.service';
 import { DynamoService } from '../../shared/dynamo-service';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { ArticlesRepository } from '../articles/articles.repository';
+import DynamoDB = require('aws-sdk/clients/dynamodb');
 
-const docClient: DocumentClient = new DynamoService().getInstance();
+const docClient: DynamoDB = new DynamoService().getInstance();
 const repo: TagsRepository = new TagsRepository(docClient);
 const articlesRepo: ArticlesRepository = new ArticlesRepository(docClient);
 const service: TagsService = new TagsService(repo, articlesRepo);

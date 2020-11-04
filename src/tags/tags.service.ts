@@ -47,52 +47,29 @@ export class TagsService {
       // cleanup, 
       // 1. remove from all articles tags property 
       // 2. delete all tag relations 
-
       const tagArticles: GetTagArticlesResult = await this.repo.getTagArticles(tagId);
 
       if (tagArticles && tagArticles.items) {
-        const articlesPromises = tagArticles.items.map(
-          tagArticle => this.articleRepo.getArticlePreview(tagArticle.article_link_pk)
-        );
-        const articlePreviews = await Promise.all(articlesPromises);
+        const removeTagArticlesPromises: Promise<GetArticleResult>[] = [];
+        const deleteAllTagRelationsPromises: Promise<DeleteTagResult>[] = [];
 
-        // Going through articlePreviews
-        if (articlePreviews) {
-          const updateTagsPromises: Promise<GetArticleResult>[] = [];
-          const deleteAllTagRelationsPromises: Promise<DeleteTagResult>[] = [];
+        tagArticles.items.forEach(tagArticle => {
+          removeTagArticlesPromises.push(this.articleRepo.removeArticleTag(tagArticle.entities_sort, tagId));
+          deleteAllTagRelationsPromises.push(this.repo.deleteTagRelation(tagId, tagArticle.entities_sort));
+        });
 
-          articlePreviews.forEach(article => {
-            // Nesting in Tags
-            if (article.item && article.item.tags) {
-              const articleTags = article.item.tags;
+        //Removing tags from articles
+        const removedTagFromArticles = await Promise.all(removeTagArticlesPromises);
+        if (!removedTagFromArticles) {
+          throw new Error(`Error while trying to remove tag ${tagId} from articles`);
+        }
 
-              //removing TagId from tags array
-              var index = articleTags.indexOf(tagId);
-              if (index !== -1) {
-                articleTags.splice(index, 1);
-              }
+        //Deleting all relations
+        if (deleteAllTagRelationsPromises.length) {
+          const deleteAllTagRelationsResult = await Promise.all(deleteAllTagRelationsPromises);
 
-              updateTagsPromises.push(this.articleRepo.updateNewTagsArticle(article.item.entities_sort, articleTags));
-              deleteAllTagRelationsPromises.push(this.repo.deleteTagRelation(tagId, article.item.entities_sort));
-            }
-          });
-
-          // Updating articles with removed tags
-          if (updateTagsPromises.length) {
-            const updatedTagsResult = await Promise.all(updateTagsPromises);
-
-            if (!updatedTagsResult) {
-              throw new Error(`Error while trying to update tags articles for tag: ${updatedTagsResult}`);
-            }
-          }
-
-          //Deleting all relations
-          if (deleteAllTagRelationsPromises.length) {
-            const deleteAllTagRelationsResult = await Promise.all(deleteAllTagRelationsPromises);
-
-            if (!deleteAllTagRelationsResult) {
-              throw new Error(`Error while trying to delete tag relations for tag: ${tagId}`);
-            }
+          if (!deleteAllTagRelationsResult) {
+            throw new Error(`Error while trying to delete tag relations for tag: ${tagId}`);
           }
         }
       }

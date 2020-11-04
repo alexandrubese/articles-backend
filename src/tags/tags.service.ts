@@ -35,7 +35,7 @@ export class TagsService {
 
   public async deleteTag(tagId: string): Promise<DeleteTagResult> {
     try {
-      //const result: DeleteTagResult = await this.repo.deleteTag(tagId);
+      const result: DeleteTagResult = await this.repo.deleteTag(tagId);
 
       // cleanup, 
       // 1. remove from all articles tags property 
@@ -74,23 +74,24 @@ export class TagsService {
           if (updateTagsPromises.length) {
             const updatedTagsResult = await Promise.all(updateTagsPromises);
 
-            updatedTagsResult.forEach(item => {
-              console.log(item?.item?.tags);
-            });
+            if (!updatedTagsResult) {
+              throw new Error(`Error while trying to update tags articles for tag: ${updatedTagsResult}`);
+            }
           }
 
           //Deleting all relations
           if (deleteAllTagRelationsPromises.length) {
             const deleteAllTagRelationsResult = await Promise.all(deleteAllTagRelationsPromises);
 
-            deleteAllTagRelationsResult.forEach(item => {
-              console.log(item?.item?.tags);
-            });
+            if (!deleteAllTagRelationsResult) {
+              throw new Error(`Error while trying to delete tag relations for tag: ${tagId}`);
+            }
           }
         }
       }
 
-      return { item: undefined };
+      return result;
+
     } catch (e) {
       console.log('Tags Service fn deleteTag:', e);
       throw e;

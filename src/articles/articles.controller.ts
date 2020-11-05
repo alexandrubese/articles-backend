@@ -3,6 +3,7 @@ import {
 } from '../../shared/api.interfaces';
 import { ErrorCode } from '../../shared/error-codes';
 import { handleError } from '../../shared/error-handler';
+import { diffArray } from '../../shared/helper-functions';
 import { ResponseBuilder } from '../../shared/response-builder';
 import { SubjectType } from '../../shared/validators/error.interface';
 import { validate } from '../../shared/validators/validator';
@@ -148,9 +149,26 @@ export class ArticlesController {
       if (result && result.item) {
         const oldTags = result.item.tags;
         const newTags = editArticleInputs.tags;
+        const tagsToBeAdded: string[] = [];
+        const tagsToBeDeleted: string[] = [];
 
-        console.log('oldTags: ', oldTags);
-        console.log('newTags: ', newTags);
+        const tagsDifference = diffArray(newTags, oldTags);
+        console.log('diff: ', tagsDifference);
+
+        if (tagsDifference.length) {
+          tagsDifference.forEach(tag => {
+            if (newTags.includes(tag)) {
+              tagsToBeAdded.push(tag);
+            } else {
+              tagsToBeDeleted.push(tag);
+            }
+          });
+
+          console.log('tagsToBeAdded: ', tagsToBeAdded);
+          console.log('tagsToBeDeleted:', tagsToBeDeleted);
+        } else {
+          console.log('No tag relations need to be changed!');
+        }
       }
 
       // Creating tagArticle relation

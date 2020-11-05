@@ -6,6 +6,10 @@ export interface ArticleInputs {
   tags: string[];
 }
 
+export interface EditArticleInputs extends ArticleInputs {
+  articleDate: string;
+}
+
 export interface ArticleDetails extends ArticleInputs {
   entities: string;
   entities_sort: string;

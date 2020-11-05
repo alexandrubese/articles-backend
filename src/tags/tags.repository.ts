@@ -34,7 +34,7 @@ export class TagsRepository {
       const createTagResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.putItem(params).promise();
 
-      const createdTag: Tag = unmarshal([params.Item]) as Tag;
+      const createdTag: Tag = unmarshal(params.Item) as Tag;
 
       if (!createTagResponse) {
         return { item: undefined };
@@ -63,7 +63,7 @@ export class TagsRepository {
       const createTagArticleResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.putItem(params).promise();
 
-      const createdTagArticle: TagArticle = unmarshal([params.Item]) as TagArticle;
+      const createdTagArticle: TagArticle = unmarshal(params.Item) as TagArticle;
 
       if (!createTagArticleResponse) {
         return { item: undefined };

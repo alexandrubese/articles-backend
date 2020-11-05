@@ -4,6 +4,7 @@ import {
   Article,
   ArticleDetails,
   ArticleInputs,
+  EditArticleInputs,
   GetArticleResult,
   GetArticlesResult,
   RelatedArticle
@@ -262,7 +263,7 @@ export class ArticlesRepository {
       const createArticleResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.putItem(params).promise();
 
-      const createdArticle: Article = unmarshal([params.Item]);
+      const createdArticle: Article = unmarshal(params.Item);
 
       if (!createArticleResponse) {
         return { item: undefined };
@@ -273,6 +274,41 @@ export class ArticlesRepository {
       return result;
     } catch (e) {
       console.log('Error in Article repo fn createArticle, throwing error up one level');
+      throw e;
+    }
+  }
+
+  public async editArticle(editArticleInputs: EditArticleInputs): Promise<GetArticleResult> {
+    try {
+      const params: DynamoDB.UpdateItemInput = {
+        TableName: 'test_articles',
+        Key: {
+          'entities': { S: 'ARTICLE' },
+          'entities_sort': { S: editArticleInputs.articleDate }
+        },
+        UpdateExpression: 'set title = :title, body=:body, tags=:tags',
+        ExpressionAttributeValues: {
+          ':title': { S: editArticleInputs.title },
+          ':body': { S: editArticleInputs.body },
+          ':tags': { SS: editArticleInputs.tags }
+        },
+        ReturnValues: 'UPDATED_OLD'
+      };
+
+      const updateArticleResponse: PromiseResult<DynamoDB.UpdateItemOutput, AWSError> =
+        await this.docClient.updateItem(params).promise();
+
+      const updatedArticle: Article = unmarshal(updateArticleResponse.Attributes) as Article;
+
+      if (!updateArticleResponse) {
+        return { item: undefined };
+      }
+
+      const result: GetArticleResult = { item: updatedArticle };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Article repo fn editArticle, throwing error up one level');
       throw e;
     }
   }
@@ -296,11 +332,11 @@ export class ArticlesRepository {
         await this.docClient.updateItem(params).promise();
 
 
-      const updatedTag = unmarshal([updateTagResponse.Attributes]) as (Article | undefined);
+      const updatedTag = unmarshal(updateTagResponse.Attributes) as (Article | undefined);
       if (!updateTagResponse) {
         return { item: undefined };
       }
-      const result: GetArticleResult = { item: updatedTag as (Article | undefined) };
+      const result: GetArticleResult = { item: updatedTag };
 
       return result;
     } catch (e) {
@@ -328,11 +364,11 @@ export class ArticlesRepository {
         await this.docClient.updateItem(params).promise();
 
 
-      const updatedTag = unmarshal([updateTagResponse.Attributes]) as (Article | undefined);
+      const updatedTag = unmarshal(updateTagResponse.Attributes) as (Article | undefined);
       if (!updateTagResponse) {
         return { item: undefined };
       }
-      const result: GetArticleResult = { item: updatedTag as (Article | undefined) };
+      const result: GetArticleResult = { item: updatedTag };
 
       return result;
     } catch (e) {

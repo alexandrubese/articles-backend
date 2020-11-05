@@ -28,7 +28,7 @@ export class CommentsRepository {
       const putCommentResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.putItem(params).promise();
 
-      const commentItems: Comment = unmarshal([params.Item]) as Comment;
+      const commentItems: Comment = unmarshal(params.Item) as Comment;
 
       if (!putCommentResponse) {
         return { item: undefined };

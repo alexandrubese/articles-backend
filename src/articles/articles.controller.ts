@@ -8,7 +8,7 @@ import { SubjectType } from '../../shared/validators/error.interface';
 import { validate } from '../../shared/validators/validator';
 import { TagArticleInputs } from '../tags/tags.interfaces';
 import { TagsService } from '../tags/tags.service';
-import { ArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
+import { ArticleInputs, EditArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
 import { ArticlesService } from './articles.service';
 
 export class ArticlesController {
@@ -58,7 +58,7 @@ export class ArticlesController {
       const articleFields: SubjectType[] = [
         { field: 'title', type: 'string' },
         { field: 'body', type: 'string' },
-        //   { field: 'tags', type: 'object' },
+        { field: 'tags', type: 'array' },
       ];
 
       const article = JSON.parse(event.body) as ArticleInputs;
@@ -70,7 +70,7 @@ export class ArticlesController {
       }
 
       const result: GetArticleResult = await this.service.createArticle(article);
-      /*
+
       // Creating tagArticle relation
       if (result.item && result.item.tags) {
         const article = result.item;
@@ -90,7 +90,7 @@ export class ArticlesController {
           throw new Error(`Failed to create tagArticle relations for Article: ${article.article_link_pk}`);
         }
       }
-*/
+
       return ResponseBuilder.ok<GetArticleResult>(result, callback);
 
     } catch (e) {
@@ -116,6 +116,65 @@ export class ArticlesController {
       const result: GetArticlesResult = await this.service.getRelatedArticlesByTags(payload.articleId, payload.tags);
 
       return ResponseBuilder.ok<GetArticlesResult>(result, callback);
+    } catch (e) {
+      return handleError(e, callback);
+    }
+  }
+
+  public editArticle: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
+    Promise<void> => {
+    try {
+      if (!event.body) {
+        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'No body supplied for editArticle!', callback);
+      }
+
+      const articleFields: SubjectType[] = [
+        { field: 'title', type: 'string' },
+        { field: 'body', type: 'string' },
+        { field: 'tags', type: 'array' },
+        { field: 'articleDate', type: 'string' }
+      ];
+
+      const editArticleInputs = JSON.parse(event.body) as EditArticleInputs;
+
+      const errors = validate(editArticleInputs, articleFields);
+      if (errors.length) {
+        return ResponseBuilder.badRequest(
+          ErrorCode.InvalidInput, 'The object supplied has some errors', callback, errors);
+      }
+
+      const result: GetArticleResult = await this.service.editArticle(editArticleInputs);
+
+      if (result && result.item) {
+        const oldTags = result.item.tags;
+        const newTags = editArticleInputs.tags;
+
+        console.log('oldTags: ', oldTags);
+        console.log('newTags: ', newTags);
+      }
+
+      // Creating tagArticle relation
+      /*if (result.item && result.item.tags) {
+          const article = result.item;
+          const createdArticleTags = article.tags;
+  
+          const createTagArticlePromises = createdArticleTags.map(tag => {
+            const tagArticle: TagArticleInputs = {
+              article_id: article.article_link_pk,
+              article_date: article.entities_sort,
+              tag_id: tag
+            };
+            return this.tagsService.createTagArticle(tagArticle);
+          });
+  
+          const createTagArticleResult = await Promise.all(createTagArticlePromises);
+          if (!createTagArticleResult) {
+            throw new Error(`Failed to create tagArticle relations for Article: ${article.article_link_pk}`);
+          }
+        }*/
+
+      return ResponseBuilder.ok<GetArticleResult>(result, callback);
+
     } catch (e) {
       return handleError(e, callback);
     }

@@ -17,4 +17,5 @@ const controller: ArticlesController = new ArticlesController(service, tagsServi
 export const getArticles: ApiHandler = controller.getArticles;
 export const getArticle: ApiHandler = controller.getArticle;
 export const createArticle: ApiHandler = controller.createArticle;
+export const editArticle: ApiHandler = controller.editArticle;
 export const getRelatedArticlesByTags: ApiHandler = controller.getRelatedArticlesByTags;

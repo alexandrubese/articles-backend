@@ -1,4 +1,4 @@
-import { ArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
+import { ArticleInputs, EditArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
 import { ArticlesRepository } from './articles.repository';
 
 export class ArticlesService {
@@ -47,6 +47,17 @@ export class ArticlesService {
       return result;
     } catch (e) {
       console.log('Articles Service fn createArticle:', e);
+      throw e;
+    }
+  }
+
+  public async editArticle(editArticleInputs: EditArticleInputs): Promise<GetArticleResult> {
+    try {
+      const result: GetArticleResult = await this.repo.editArticle(editArticleInputs);
+
+      return result;
+    } catch (e) {
+      console.log('Articles Service fn editArticle:', e);
       throw e;
     }
   }

@@ -90,14 +90,14 @@ export class ArticlesRepository {
       const articlesResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
 
-      const articleItems = unmarshal(articlesResponse.Items);
-      const articleDetails = articleItems.find(item => item.article_link_sk === 'D') as ArticleDetails;
+      const articleItems = unmarshal(articlesResponse.Items) as any[];
+      const articleDetails = articleItems.find((item: Article) => item.article_link_sk === 'D');
 
       if (!articleDetails) {
         return { item: undefined };
       }
 
-      const articleComments = articleItems.filter(item =>
+      const articleComments = articleItems.filter((item: Comment) =>
         item.article_link_sk !== 'D' && item.article_link_sk !== '#') as Comment[];
 
       const article: Article = {
@@ -134,8 +134,8 @@ export class ArticlesRepository {
       const articlesResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
 
-      const articleItems = unmarshal(articlesResponse.Items);
-      const articleDetails = articleItems.find(item => item.article_link_sk === 'D') as ArticleDetails;
+      const articleItems = unmarshal(articlesResponse.Items) as ArticleDetails[];
+      const articleDetails = articleItems.find(item => item.article_link_sk === 'D');
 
       if (!articleDetails) {
         return { item: undefined };
@@ -175,7 +175,7 @@ export class ArticlesRepository {
       // Going through all tags(and the articles assigned to them), counting each article id ocurence in the tags
       // We want to return the related articles as the articles most occured in the tags of the current article 
       getTagArticlesResponse.forEach(response => {
-        const tagArticles = unmarshal(response.Items);
+        const tagArticles = unmarshal(response.Items) as Article[];
 
         if (tagArticles) {
           tagArticles.forEach(article => {

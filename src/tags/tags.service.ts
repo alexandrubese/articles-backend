@@ -92,4 +92,26 @@ export class TagsService {
       throw e;
     }
   }
+
+  public async updateArticleRelations(
+    articleId: string,
+    articleDate: string,
+    tagsToAdd: string[],
+    tagsToRemove: string[]
+  ): Promise<DeleteTagResult> {
+    try {
+      const result: DeleteTagResult = await this.repo.updateArticleRelations(
+        articleId,
+        articleDate,
+        tagsToAdd,
+        tagsToRemove
+      );
+
+      return result;
+    } catch (e) {
+      console.log('Tags Service fn deleteTagRelation:', e);
+      throw e;
+    }
+  }
+
 }

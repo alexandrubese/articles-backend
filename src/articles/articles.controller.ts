@@ -125,9 +125,14 @@ export class ArticlesController {
   public editArticle: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
     Promise<void> => {
     try {
+      if (!event || !event.pathParameters || !event.pathParameters.articleId) {
+        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please specify the article ID!', callback);
+      }
+
       if (!event.body) {
         return ResponseBuilder.badRequest(ErrorCode.MissingId, 'No body supplied for editArticle!', callback);
       }
+      const { articleId } = event.pathParameters;
 
       const articleFields: SubjectType[] = [
         { field: 'title', type: 'string' },
@@ -146,50 +151,35 @@ export class ArticlesController {
 
       const result: GetArticleResult = await this.service.editArticle(editArticleInputs);
 
+      let tagsToBeAdded: string[] = [];
+      const tagsToBeDeleted: string[] = [];
+
       if (result && result.item) {
-        const oldTags = result.item.tags;
         const newTags = editArticleInputs.tags;
-        const tagsToBeAdded: string[] = [];
-        const tagsToBeDeleted: string[] = [];
 
-        const tagsDifference = diffArray(newTags, oldTags);
-        console.log('diff: ', tagsDifference);
-
-        if (tagsDifference.length) {
-          tagsDifference.forEach(tag => {
-            if (newTags.includes(tag)) {
-              tagsToBeAdded.push(tag);
-            } else {
-              tagsToBeDeleted.push(tag);
-            }
-          });
-
-          console.log('tagsToBeAdded: ', tagsToBeAdded);
-          console.log('tagsToBeDeleted:', tagsToBeDeleted);
+        // If the article didn't had any tags object before update (deleted before) all tags need to be added
+        // check articleRepo.editArticle function
+        if (!result.item.tags) {
+          tagsToBeAdded = [...newTags];
         } else {
-          console.log('No tag relations need to be changed!');
+          const oldTags = result.item.tags;
+          const tagsDifference = diffArray(newTags, oldTags);
+
+          if (tagsDifference.length) {
+            tagsDifference.forEach(tag => {
+              if (newTags.includes(tag)) {
+                tagsToBeAdded.push(tag);
+              } else {
+                tagsToBeDeleted.push(tag);
+              }
+            });
+          } else {
+            console.log('No tag relations need to be changed!');
+          }
         }
       }
 
-      // Creating tagArticle relation
-      /*if (result.item && result.item.tags) {
-          const article = result.item;
-          const createdArticleTags = article.tags;
-  
-          const createTagArticlePromises = createdArticleTags.map(tag => {
-            const tagArticle: TagArticleInputs = {
-              article_id: article.article_link_pk,
-              article_date: article.entities_sort,
-              tag_id: tag
-            };
-            return this.tagsService.createTagArticle(tagArticle);
-          });
-  
-          const createTagArticleResult = await Promise.all(createTagArticlePromises);
-          if (!createTagArticleResult) {
-            throw new Error(`Failed to create tagArticle relations for Article: ${article.article_link_pk}`);
-          }
-        }*/
+      this.tagsService.updateArticleRelations(articleId, editArticleInputs.articleDate, tagsToBeAdded, tagsToBeDeleted);
 
       return ResponseBuilder.ok<GetArticleResult>(result, callback);
 

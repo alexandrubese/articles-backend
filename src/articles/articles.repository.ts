@@ -280,20 +280,29 @@ export class ArticlesRepository {
 
   public async editArticle(editArticleInputs: EditArticleInputs): Promise<GetArticleResult> {
     try {
-      const params: DynamoDB.UpdateItemInput = {
+      let params: DynamoDB.UpdateItemInput = {
         TableName: 'test_articles',
         Key: {
           'entities': { S: 'ARTICLE' },
           'entities_sort': { S: editArticleInputs.articleDate }
         },
-        UpdateExpression: 'set title = :title, body=:body, tags=:tags',
-        ExpressionAttributeValues: {
+        ReturnValues: 'UPDATED_OLD'
+      };
+      // Empty Array! DynamoDB doesn't let us store empty String Sets, so we are deleting the whole attribute
+      if (!editArticleInputs.tags.length) {
+        params.UpdateExpression = 'SET title=:title, body=:body REMOVE tags';
+        params.ExpressionAttributeValues = {
+          ':title': { S: editArticleInputs.title },
+          ':body': { S: editArticleInputs.body }
+        };
+      } else {
+        params.UpdateExpression = 'SET title = :title, body=:body, tags=:tags';
+        params.ExpressionAttributeValues = {
           ':title': { S: editArticleInputs.title },
           ':body': { S: editArticleInputs.body },
           ':tags': { SS: editArticleInputs.tags }
-        },
-        ReturnValues: 'UPDATED_OLD'
-      };
+        };
+      }
 
       const updateArticleResponse: PromiseResult<DynamoDB.UpdateItemOutput, AWSError> =
         await this.docClient.updateItem(params).promise();

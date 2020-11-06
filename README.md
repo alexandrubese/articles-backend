@@ -42,4 +42,4 @@ Things to do:
     -2nd Approach: for updating relationships on update return all_old (old data), you will have the new data on post, make a diff between them and make the updates accordingly( add/delete ) you might already have the tagRelations object fetched and can use it to add/delete ones so nr.1 is not necesary
 3. Delete comment endpoint - Done
 4. Edit tag - Done
-5. Delete Article (maintain all relationships, just change an "active" flag to false) - 
+5. Delete Article + all its TagRelationships and Comments - Done

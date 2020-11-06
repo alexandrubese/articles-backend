@@ -221,6 +221,9 @@ export class ArticlesController {
       });
 
       // Removing Comments for the deleted article
+      // Used Promise.all to delete each comment individually instead of BatchWrite 
+      // Since we might have more than 25 comments for an article
+      // And we want to avoid the BatchWrite limitation
       await Promise.all(deleteArticleCommentsPromises);
 
       const result: DeleteArticleResult = { item: `Article ${articleId} deleted successfully !` };

@@ -10,7 +10,13 @@ import { validate } from '../../shared/validators/validator';
 import { CommentsService } from '../comments/comments.service';
 import { TagArticleInputs } from '../tags/tags.interfaces';
 import { TagsService } from '../tags/tags.service';
-import { ArticleInputs, DeleteArticleResult, EditArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
+import {
+  ArticleInputs,
+  DeleteArticleResult,
+  EditArticleInputs,
+  GetArticleResult,
+  GetArticlesResult
+} from './articles.interfaces';
 import { ArticlesService } from './articles.service';
 
 export class ArticlesController {

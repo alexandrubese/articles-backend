@@ -6,7 +6,7 @@ import { handleError } from '../../shared/error-handler';
 import { ResponseBuilder } from '../../shared/response-builder';
 import { SubjectType } from '../../shared/validators/error.interface';
 import { validate } from '../../shared/validators/validator';
-import { CommentInputs, PutCommentResult } from './comments.interfaces';
+import { CommentInputs, DeleteCommentResult, PutCommentResult } from './comments.interfaces';
 import { CommentsService } from './comments.service';
 
 export class CommentsController {
@@ -43,6 +43,23 @@ export class CommentsController {
       const result: PutCommentResult = await this.service.putComment(articleId, comment);
 
       return ResponseBuilder.ok<PutCommentResult>(result, callback);
+    } catch (e) {
+      return handleError(e, callback);
+    }
+  }
+
+  public deleteComment: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
+    Promise<void> => {
+    try {
+      if (!event || !event.pathParameters || !event.pathParameters.commentId) {
+        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please specify the comment ID!', callback);
+      }
+
+      const { commentId } = event.pathParameters;
+
+      const result: DeleteCommentResult = await this.service.deleteComment(commentId);
+
+      return ResponseBuilder.ok<DeleteCommentResult>(result, callback);
     } catch (e) {
       return handleError(e, callback);
     }

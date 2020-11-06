@@ -1,6 +1,6 @@
 import { AWSError, DynamoDB } from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
-import { Comment, CommentInputs, PutCommentResult } from './comments.interfaces';
+import { Comment, CommentInputs, DeleteCommentResult, PutCommentResult } from './comments.interfaces';
 import { uuid } from 'uuidv4';
 import { unmarshal } from '../../shared/helper-functions';
 
@@ -38,6 +38,31 @@ export class CommentsRepository {
       return result;
     } catch (e) {
       console.log('Error in Comments repo fn putComment, throwing error up one level');
+      throw e;
+    }
+  }
+
+  public async deleteComment(commentId: string): Promise<DeleteCommentResult> {
+    try {
+      const params: DynamoDB.DeleteItemInput = {
+        TableName: 'test_articles',
+        Key: {
+          'entities': { S: 'COMMENT' },
+          'entities_sort': { S: commentId }
+        }
+      };
+
+      const deleteCommentResponse: PromiseResult<DynamoDB.DeleteItemOutput, AWSError> =
+        await this.docClient.deleteItem(params).promise();
+
+      if (!deleteCommentResponse) {
+        throw new Error(`Error deleting the comment with id: ${commentId}`);
+      }
+      const result: DeleteCommentResult = { item: 'Comment deleted successfully' };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Comments repo fn deleteComment, throwing error up one level');
       throw e;
     }
   }

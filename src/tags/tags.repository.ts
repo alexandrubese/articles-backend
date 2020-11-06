@@ -87,10 +87,10 @@ export class TagsRepository {
         }
       };
 
-      const createTagArticleResponse: PromiseResult<DynamoDB.DeleteItemOutput, AWSError> =
+      const deleteTagResponse: PromiseResult<DynamoDB.DeleteItemOutput, AWSError> =
         await this.docClient.deleteItem(params).promise();
 
-      if (!createTagArticleResponse) {
+      if (!deleteTagResponse) {
         return { item: undefined };
       }
       const result: DeleteTagResult = { item: 'Tag deleted successfully' };

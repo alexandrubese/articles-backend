@@ -24,7 +24,7 @@ Things to do:
 
     delete all tags by tagId: - Done 
 
-2. Edit Article (and update of tags property on article + relationships after ) - 
+2. Edit Article (and update of tags property on article + relationships after ) - Done
     - 1st Approach : update the tags property, then delete + or add new ones based on GSI1PK and GSISK where : article_link_pk= articleId, and article_link_sk = #, this will give you all the lines for tag relations for this article, 
     { entities: tagId,
       entities_sort: article_date,
@@ -40,6 +40,6 @@ Things to do:
     #data needs to be changed: article_link_sk = #tag_id from #, check implications! also check nr. 2
 
     -2nd Approach: for updating relationships on update return all_old (old data), you will have the new data on post, make a diff between them and make the updates accordingly( add/delete ) you might already have the tagRelations object fetched and can use it to add/delete ones so nr.1 is not necesary
-3. Delete comment endpoint
-4. Edit tag
+3. Delete comment endpoint - Done
+4. Edit tag - 
 5. Delete Article (maintain all relationships, just change an "active" flag to false)

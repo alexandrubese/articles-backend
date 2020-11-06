@@ -18,3 +18,7 @@ export interface GetCommentsResult {
 export interface PutCommentResult {
   item: Comment | undefined;
 }
+
+export interface DeleteCommentResult {
+  item: string | undefined;
+}

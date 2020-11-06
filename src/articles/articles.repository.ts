@@ -167,7 +167,7 @@ export class ArticlesRepository {
 
   public async getRelatedArticlesByTags(aId: string, tags: string[]): Promise<GetArticlesResult> {
     try {
-      //Rewrite this with BatchGetItems
+      //TODO: Refactor: Rewrite this with BatchGetItems
       const getRelatedPromises = tags.map(tag =>
         this.docClient.query(this.constructGetRelatedArticlesParams(tag)).promise());
       const getTagArticlesResponse = await Promise.all(getRelatedPromises);

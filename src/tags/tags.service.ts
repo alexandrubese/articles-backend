@@ -29,6 +29,17 @@ export class TagsService {
     }
   }
 
+  public async editTag(tagId: string, tag: TagInputs): Promise<GetTagResult> {
+    try {
+      const result: GetTagResult = await this.repo.editTag(tagId, tag);
+
+      return result;
+    } catch (e) {
+      console.log('Tags Service fn editTag:', e);
+      throw e;
+    }
+  }
+
   public async createTagArticle(tagArticle: TagArticleInputs): Promise<GetTagArticleResult> {
     try {
       const result: GetTagArticleResult = await this.repo.createTagArticle(tagArticle);

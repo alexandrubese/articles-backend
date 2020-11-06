@@ -48,6 +48,38 @@ export class TagsRepository {
     }
   }
 
+  public async editTag(tagId: string, tag: TagInputs): Promise<GetTagResult> {
+    try {
+      const params: DynamoDB.UpdateItemInput = {
+        TableName: 'test_articles',
+        Key: {
+          'entities': { S: 'TAG' },
+          'entities_sort': { S: tagId }
+        },
+        UpdateExpression: 'SET title = :title',
+        ExpressionAttributeValues: {
+          ':title': { S: tag.title }
+        },
+        ReturnValues: 'UPDATED_NEW'
+      };
+
+      const createTagResponse: PromiseResult<DynamoDB.UpdateItemOutput, AWSError> =
+        await this.docClient.updateItem(params).promise();
+
+      const updateTag: Tag = unmarshal(createTagResponse.Attributes) as Tag;
+
+      if (!updateTag) {
+        throw new Error(`Error while updating tag: ${tagId}`);
+      }
+      const result: GetTagResult = { item: updateTag };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Tags repo fn editTag, throwing error up one level');
+      throw e;
+    }
+  }
+
   public async createTagArticle(tagArticle: TagArticleInputs): Promise<GetTagArticleResult> {
     try {
       const params: DynamoDB.PutItemInput = {

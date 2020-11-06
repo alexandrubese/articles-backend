@@ -7,18 +7,21 @@ import { diffArray } from '../../shared/helper-functions';
 import { ResponseBuilder } from '../../shared/response-builder';
 import { SubjectType } from '../../shared/validators/error.interface';
 import { validate } from '../../shared/validators/validator';
+import { CommentsService } from '../comments/comments.service';
 import { TagArticleInputs } from '../tags/tags.interfaces';
 import { TagsService } from '../tags/tags.service';
-import { ArticleInputs, EditArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
+import { ArticleInputs, DeleteArticleResult, EditArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
 import { ArticlesService } from './articles.service';
 
 export class ArticlesController {
   private readonly service: ArticlesService;
   private readonly tagsService: TagsService;
+  private readonly commentsService: CommentsService;
 
-  constructor(service: ArticlesService, tagsService: TagsService) {
+  constructor(service: ArticlesService, tagsService: TagsService, commentsService: CommentsService) {
     this.service = service;
     this.tagsService = tagsService;
+    this.commentsService = commentsService;
   }
 
   public getArticles: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
@@ -182,6 +185,40 @@ export class ArticlesController {
       this.tagsService.updateArticleRelations(articleId, editArticleInputs.articleDate, tagsToBeAdded, tagsToBeDeleted);
 
       return ResponseBuilder.ok<GetArticleResult>(result, callback);
+
+    } catch (e) {
+      return handleError(e, callback);
+    }
+  }
+
+  public deleteArticle: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
+    Promise<void> => {
+    try {
+      if (!event || !event.pathParameters || !event.pathParameters.articleId) {
+        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please specify the article ID!', callback);
+      }
+      const { articleId } = event.pathParameters;
+      const deletedArticle: GetArticleResult = await this.service.deleteArticle(articleId);
+
+      if (!deletedArticle || !deletedArticle.item) {
+        throw new Error(`Article with id:${articleId} did not get deleted`);
+      }
+      // Removing TagRelations for the deleted article
+      const articleDate = deletedArticle.item.entities_sort;
+      const articleTags = deletedArticle.item.tags;
+      const articleComments = deletedArticle.item.comments;
+      await this.tagsService.updateArticleRelations(articleId, articleDate, [], articleTags);
+
+      const deleteArticleCommentsPromises = articleComments.map(comment => {
+        const commentId = comment.entities_sort;
+        return this.commentsService.deleteComment(commentId);
+      });
+
+      // Removing Comments for the deleted article
+      await Promise.all(deleteArticleCommentsPromises);
+
+      const result: DeleteArticleResult = { item: `Article ${articleId} deleted successfully !` };
+      return ResponseBuilder.ok<DeleteArticleResult>(result, callback);
 
     } catch (e) {
       return handleError(e, callback);

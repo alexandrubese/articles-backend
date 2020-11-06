@@ -1,4 +1,10 @@
-import { ArticleInputs, EditArticleInputs, GetArticleResult, GetArticlesResult } from './articles.interfaces';
+import {
+  ArticleInputs,
+  DeleteArticleResult,
+  EditArticleInputs,
+  GetArticleResult,
+  GetArticlesResult
+} from './articles.interfaces';
 import { ArticlesRepository } from './articles.repository';
 
 export class ArticlesService {
@@ -61,4 +67,24 @@ export class ArticlesService {
       throw e;
     }
   }
+
+  public async deleteArticle(articleId: string): Promise<GetArticleResult> {
+    try {
+      const result: GetArticleResult = await this.repo.getArticle(articleId);
+      if (result && result.item) {
+        const deleteArticle: DeleteArticleResult = await this.repo.deleteArticle(result.item.entities_sort);
+        if (!deleteArticle || !deleteArticle.item) {
+          throw new Error(`Article with id: ${articleId} failed to get deleted`);
+        }
+      }
+
+      //Passing the deleted article details to the controller for cleanup (deleting tags and comments)
+      return result;
+    } catch (e) {
+      console.log('Articles Service fn editArticle:', e);
+      throw e;
+    }
+  }
+
+
 }

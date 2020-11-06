@@ -298,6 +298,20 @@ functions:
           path: comments/{commentId}
           method: delete
           cors: true
+
+  deleteArticle:
+    handler: src/articles/articles.deleteArticle
+    description: Deletes an article and all its tag relations
+    memorySize: 128
+    timeout: 10
+    environment:
+      DEFAULT_COUNTRY: Romania
+
+    events:
+      - http:
+          path: articles/{articleId}
+          method: delete
+          cors: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

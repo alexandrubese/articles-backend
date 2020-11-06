@@ -37,3 +37,7 @@ export interface GetArticlesResult {
 export interface GetArticleResult {
   item: Article | undefined;
 }
+
+export interface DeleteArticleResult {
+  item: string | undefined;
+}

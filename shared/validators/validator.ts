@@ -8,7 +8,9 @@ function validateField(article: object, field: string, validationType: string): 
     }
 
     switch (validationType) {
+        case 'object':
         case 'string':
+        case 'boolean':
         case 'number':
             if (typeof (article[field]) != validationType) {
                 return msgTemplate;

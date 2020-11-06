@@ -4,6 +4,7 @@ import {
   Article,
   ArticleDetails,
   ArticleInputs,
+  DeleteArticleResult,
   EditArticleInputs,
   GetArticleResult,
   GetArticlesResult,
@@ -166,6 +167,7 @@ export class ArticlesRepository {
 
   public async getRelatedArticlesByTags(aId: string, tags: string[]): Promise<GetArticlesResult> {
     try {
+      //Rewrite this with BatchGetItems
       const getRelatedPromises = tags.map(tag =>
         this.docClient.query(this.constructGetRelatedArticlesParams(tag)).promise());
       const getTagArticlesResponse = await Promise.all(getRelatedPromises);
@@ -382,6 +384,31 @@ export class ArticlesRepository {
       return result;
     } catch (e) {
       console.log('Error in Article repo fn removeArticleTag, throwing error up one level');
+      throw e;
+    }
+  }
+
+  public async deleteArticle(articleDate: string): Promise<DeleteArticleResult> {
+    try {
+      const params: DynamoDB.DeleteItemInput = {
+        TableName: 'test_articles',
+        Key: {
+          'entities': { S: 'ARTICLE' },
+          'entities_sort': { S: articleDate }
+        }
+      };
+
+      const deleteArticleResponse: PromiseResult<DynamoDB.DeleteItemOutput, AWSError> =
+        await this.docClient.deleteItem(params).promise();
+
+      if (!deleteArticleResponse) {
+        return { item: undefined };
+      }
+      const result: DeleteArticleResult = { item: 'Article deleted successfully' };
+
+      return result;
+    } catch (e) {
+      console.log('Error in Tags repo fn deleteTag, throwing error up one level');
       throw e;
     }
   }

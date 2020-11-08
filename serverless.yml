@@ -197,8 +197,8 @@ functions:
 
     events:
       - http:
-          path: getRelatedArticlesByTags
-          method: post
+          path: getRelatedArticlesByTags/{articleId}
+          method: get
           cors: true
 
   createArticle:

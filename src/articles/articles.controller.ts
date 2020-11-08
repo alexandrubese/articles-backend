@@ -111,19 +111,12 @@ export class ArticlesController {
   public getRelatedArticlesByTags: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
     Promise<void> => {
     try {
-      if (!event.body) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'No body supplied for getArticlesByTag!', callback);
+      if (!event || !event.pathParameters || !event.pathParameters.articleId) {
+        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please specify the article ID!', callback);
       }
+      const { articleId } = event.pathParameters;
 
-      const payload = JSON.parse(event.body);
-      if (!payload.tags) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Supply {tags :[]} for getArticlesByTag!', callback);
-      }
-      if (!payload.articleId) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Supply {articleId} for getArticlesByTag!', callback);
-      }
-
-      const result: GetArticlesResult = await this.service.getRelatedArticlesByTags(payload.articleId, payload.tags);
+      const result: GetArticlesResult = await this.service.getRelatedArticlesByTags(articleId);
 
       return ResponseBuilder.ok<GetArticlesResult>(result, callback);
     } catch (e) {

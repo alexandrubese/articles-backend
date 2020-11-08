@@ -1,5 +1,4 @@
 import { unmarshal } from '../../shared/helper-functions';
-import { Comment } from '../comments/comments.interfaces';
 import {
   Article,
   ArticleInputs,
@@ -30,24 +29,7 @@ export class ArticlesService {
 
   public async getArticle(articleId: string): Promise<GetArticleResult> {
     try {
-      const articlesResponse = await this.repo.getArticle(articleId);
-
-      const articleItems = unmarshal(articlesResponse.Items) as any[];
-      const articleDetails = articleItems.find((item: Article) => item.article_link_sk === 'D');
-
-      if (!articleDetails) {
-        return { item: undefined };
-      }
-
-      const articleComments = articleItems.filter((item: Comment) =>
-        item.article_link_sk !== 'D' && item.article_link_sk !== '#') as Comment[];
-
-      const article: Article = {
-        ...articleDetails,
-        comments: articleComments
-      };
-
-      const result: GetArticleResult = { item: article };
+      const result: GetArticleResult = await this.repo.getArticle(articleId);
 
       return result;
     } catch (e) {

@@ -58,6 +58,7 @@ export class TagsService {
       // cleanup, 
       // 1. remove from all articles tags property 
       // 2. delete all tag relations 
+      // Using Promise.all approach since we might have more than 25 elements and hit the BatchWriteItem limit
       const tagArticles: GetTagArticlesResult = await this.repo.getTagArticles(tagId);
 
       if (tagArticles && tagArticles.items) {

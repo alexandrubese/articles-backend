@@ -70,7 +70,7 @@ export class ArticlesRepository {
     }
   }
 
-  public async getArticle(articleId: string): Promise<GetArticleResult> {
+  public async getArticle(articleId: string): Promise<DynamoDB.QueryOutput> {
     try {
       const params: DynamoDB.QueryInput = {
         TableName: 'test_articles',
@@ -90,23 +90,7 @@ export class ArticlesRepository {
       const articlesResponse: PromiseResult<DynamoDB.QueryOutput, AWSError> =
         await this.docClient.query(params).promise();
 
-      const articleItems = unmarshal(articlesResponse.Items) as any[];
-      const articleDetails = articleItems.find((item: Article) => item.article_link_sk === 'D');
-
-      if (!articleDetails) {
-        return { item: undefined };
-      }
-
-      const articleComments = articleItems.filter((item: Comment) =>
-        item.article_link_sk !== 'D' && item.article_link_sk !== '#') as Comment[];
-
-      const article: Article = {
-        ...articleDetails,
-        comments: articleComments
-      };
-
-      const result: GetArticleResult = { item: article };
-      return result;
+      return articlesResponse;
 
     } catch (e) {
       console.log('Error in Article repo fn getArticle, throwing error up one level');

@@ -66,7 +66,7 @@ export class TagsService {
         const deleteAllTagRelationsPromises: Promise<DeleteTagResult>[] = [];
 
         tagArticles.items.forEach(tagArticle => {
-          removeTagArticlesPromises.push(this.articleRepo.removeArticleTag(tagArticle.entities_sort, tagId));
+          removeTagArticlesPromises.push(this.articleRepo.deleteArticleTag(tagArticle.entities_sort, tagId));
           deleteAllTagRelationsPromises.push(this.repo.deleteTagRelation(tagId, tagArticle.entities_sort));
         });
 

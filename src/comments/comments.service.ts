@@ -9,7 +9,7 @@ export class CommentsService {
   }
   public async putComment(articleId: string, comment: CommentInputs): Promise<PutCommentResult> {
     try {
-      const result: PutCommentResult = await this.repo.putComment(articleId, comment);
+      const result: PutCommentResult = await this.repo.createComment(articleId, comment);
 
       return result;
     } catch (e) {

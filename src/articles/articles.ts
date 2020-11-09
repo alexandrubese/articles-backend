@@ -4,19 +4,17 @@ import { ArticlesRepository } from './articles.repository';
 import { ArticlesService } from './articles.service';
 import { TagsService } from './../tags/tags.service';
 import { TagsRepository } from './../tags/tags.repository';
-import { DynamoService } from '../../shared/dynamo-service';
-import DynamoDB = require('aws-sdk/clients/dynamodb');
 import { CommentsRepository } from '../comments/comments.repository';
 import { CommentsService } from '../comments/comments.service';
 
-const docClient: DynamoDB = new DynamoService().getInstance();
-const repo: ArticlesRepository = new ArticlesRepository(docClient);
+
+const repo: ArticlesRepository = new ArticlesRepository();
 const service: ArticlesService = new ArticlesService(repo);
 
-const tagsRepo: TagsRepository = new TagsRepository(docClient);
+const tagsRepo: TagsRepository = new TagsRepository();
 const tagsService: TagsService = new TagsService(tagsRepo, repo);
 
-const commentsRepo: CommentsRepository = new CommentsRepository(docClient);
+const commentsRepo: CommentsRepository = new CommentsRepository();
 const commentsService: CommentsService = new CommentsService(commentsRepo);
 
 const controller: ArticlesController = new ArticlesController(service, tagsService, commentsService);

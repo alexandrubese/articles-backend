@@ -19,6 +19,7 @@ module.exports = {
       'error',
       // eslint-disable-next-line no-magic-numbers
       2,
+      { 'SwitchCase': 1 }
     ],
     'max-len': [
       'error',

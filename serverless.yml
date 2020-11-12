@@ -85,52 +85,7 @@ package:
   exclude:
     - node_modules/**/*
 
-functions:
-  getCity:
-    handler: src/cities/cities.getCity
-    description: Returns a single city.
-    memorySize: 128
-    timeout: 10
-    environment:
-      DEFAULT_COUNTRY: Romania
-
-    events:
-      - http:
-          path: cities/{id}
-          method: get
-          cors: true
-          request:
-            parameters:
-              paths:
-                id: true
-          documentation:
-            summary: Get a city.
-            tags:
-              - City
-            description: Returns the specified city.
-            pathParams:
-              - name: id
-                description: The unique identifier of the city to retrieve.
-            methodResponses:
-              - statusCode: '200'
-                description: Returned when the operation is completed successfully.
-                responseModels:
-                  "application/json": GetCityResponse
-
-  getDB:
-    handler: src/fromDB/fromDB.getFromDB
-    description: Returns something from db
-    memorySize: 128
-    timeout: 10
-    environment:
-      DEFAULT_COUNTRY: Romania
-
-    events:
-      - http:
-          path: getFromDB
-          method: get
-          cors: true
-  
+functions: 
   getArticles:
     handler: src/articles/articles.getArticles
     description: Returns all articles from the db

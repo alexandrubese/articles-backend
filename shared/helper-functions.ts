@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+import * as DynamoDB from 'aws-sdk/clients/dynamodb' ;
 
 const parseUnmarshal = (subject: DynamoDB.AttributeMap) => {
     return JSON.parse(JSON.stringify(DynamoDB.Converter.unmarshall(subject)));

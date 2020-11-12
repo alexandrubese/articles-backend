@@ -1,4 +1,4 @@
-import DynamoDB = require('aws-sdk/clients/dynamodb');
+import * as DynamoDB from 'aws-sdk/clients/dynamodb' ;
 import { AWSError } from 'aws-sdk/lib/error';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { DynamoService } from '../../../shared/dynamo-service';

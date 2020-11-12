@@ -1,67 +1,19 @@
 import {
-  ApiCallback, ApiContext, ApiEvent, ApiHandler
+  ApiCallback, ApiContext, ApiEvent
 } from '../../shared/api.interfaces';
-import { ErrorCode } from '../../shared/error-codes';
-import { handleError } from '../../shared/error-handler';
-import { ResponseBuilder } from '../../shared/response-builder';
-import { SubjectType } from '../../shared/validators/error.interface';
-import { validate } from '../../shared/validators/validator';
-import { CommentInputs, DeleteCommentResult, PutCommentResult } from './comments.interfaces';
 import { CommentsService } from './comments.service';
+import { CreateCommentController } from './controllerUseCases/createComment';
+import { DeleteCommentController } from './controllerUseCases/deleteComment';
 
 export class CommentsController {
   private readonly service: CommentsService;
+  
+  public readonly createComment: (event: ApiEvent, context: ApiContext, callback: ApiCallback) => Promise<void>;
+  public readonly deleteComment: (event: ApiEvent, context: ApiContext, callback: ApiCallback) => Promise<void>;
 
   constructor(service: CommentsService) {
     this.service = service;
-  }
-
-  public putComments: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
-    Promise<void> => {
-    try {
-      if (!event || !event.pathParameters || !event.pathParameters.articleId) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please specify the article ID!', callback);
-      }
-      if (!event.body) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'No body supplied for comment!', callback);
-      }
-
-      const { articleId } = event.pathParameters;
-      const comment = JSON.parse(event.body) as CommentInputs;
-
-      const commentFields: SubjectType[] = [
-        { field: 'author', type: 'string' },
-        { field: 'body', type: 'string' }
-      ];
-
-      const errors = validate(comment, commentFields);
-      if (errors.length) {
-        return ResponseBuilder.badRequest(
-          ErrorCode.InvalidInput, 'The object supplied has some errors', callback, errors);
-      }
-
-      const result: PutCommentResult = await this.service.putComment(articleId, comment);
-
-      return ResponseBuilder.ok<PutCommentResult>(result, callback);
-    } catch (e) {
-      return handleError(e, callback);
-    }
-  }
-
-  public deleteComment: ApiHandler = async (event: ApiEvent, context: ApiContext, callback: ApiCallback):
-    Promise<void> => {
-    try {
-      if (!event || !event.pathParameters || !event.pathParameters.commentId) {
-        return ResponseBuilder.badRequest(ErrorCode.MissingId, 'Please specify the comment ID!', callback);
-      }
-
-      const { commentId } = event.pathParameters;
-
-      const result: DeleteCommentResult = await this.service.deleteComment(commentId);
-
-      return ResponseBuilder.ok<DeleteCommentResult>(result, callback);
-    } catch (e) {
-      return handleError(e, callback);
-    }
+    this.createComment = new CreateCommentController(this.service).execute;
+    this.deleteComment = new DeleteCommentController(this.service).execute;
   }
 }

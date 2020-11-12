@@ -7,5 +7,5 @@ const repo: CommentsRepository = new CommentsRepository();
 const service: CommentsService = new CommentsService(repo);
 const controller: CommentsController = new CommentsController(service);
 
-export const putComments: ApiHandler = controller.putComments;
+export const createComment: ApiHandler = controller.createComment;
 export const deleteComment: ApiHandler = controller.deleteComment;

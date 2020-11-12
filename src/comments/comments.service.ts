@@ -1,31 +1,18 @@
 import { CommentInputs, DeleteCommentResult, PutCommentResult } from './comments.interfaces';
 import { CommentsRepository } from './comments.repository';
+import { CreateCommentServiceUseCase } from './serviceUseCases/createComment';
+import { DeleteCommentServiceUseCase } from './serviceUseCases/deleteComment';
 
 export class CommentsService {
   private readonly repo: CommentsRepository;
-  // eslint-disable-next-line no-undef
+  
+  public readonly putComment: (articleId: string, comment: CommentInputs) => Promise<PutCommentResult>;
+  public readonly deleteComment: (commentId: string) => Promise<DeleteCommentResult>;
+
   constructor(repo: CommentsRepository) {
     this.repo = repo;
-  }
-  public async putComment(articleId: string, comment: CommentInputs): Promise<PutCommentResult> {
-    try {
-      const result: PutCommentResult = await this.repo.createComment(articleId, comment);
 
-      return result;
-    } catch (e) {
-      console.log('Comments Service fn putComment:', e);
-      throw e;
-    }
-  }
-
-  public async deleteComment(commentId: string): Promise<DeleteCommentResult> {
-    try {
-      const result: DeleteCommentResult = await this.repo.deleteComment(commentId);
-
-      return result;
-    } catch (e) {
-      console.log('Comments Service fn putComment:', e);
-      throw e;
-    }
+    this.putComment = new CreateCommentServiceUseCase(this.repo).execute;
+    this.deleteComment = new DeleteCommentServiceUseCase(this.repo).execute;
   }
 }

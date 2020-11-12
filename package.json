@@ -55,7 +55,6 @@
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.768.0",
     "chai": "^4.2.0",
-    "chance": "^1.1.6",
     "copy-dynamodb-table": "^2.0.20",
     "coveralls": "^3.1.0",
     "mocha": "^7.2.0",

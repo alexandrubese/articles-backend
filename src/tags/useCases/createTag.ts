@@ -2,8 +2,8 @@ import * as DynamoDB from 'aws-sdk/clients/dynamodb' ;
 import { AWSError } from 'aws-sdk/lib/error';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { uuid } from 'uuidv4';
-import { DynamoService } from '../../../shared/dynamo-service';
-import { unmarshal } from '../../../shared/helper-functions';
+import { DynamoService } from '../../shared/dynamo-service';
+import { unmarshal } from '../../shared/helper-functions';
 import { GetTagResult, Tag, TagInputs } from '../tags.interfaces';
 
 export class CreateTagUseCase {

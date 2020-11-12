@@ -1,5 +1,5 @@
 import * as DynamoDB from 'aws-sdk/clients/dynamodb' ;
-import { DynamoService } from '../../../shared/dynamo-service';
+import { DynamoService } from '../../shared/dynamo-service';
 
 export class GetRelatedArticlesByTagsUseCase {
     private readonly dbInstance: DynamoDB;

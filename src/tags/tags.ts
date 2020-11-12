@@ -1,4 +1,4 @@
-import { ApiHandler } from '../../shared/api.interfaces';
+import { ApiHandler } from '../shared/api.interfaces';
 import { TagsController } from './tags.controller';
 import { TagsRepository } from './tags.repository';
 import { TagsService } from './tags.service';

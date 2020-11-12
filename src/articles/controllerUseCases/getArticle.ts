@@ -1,7 +1,7 @@
-import { ApiCallback, ApiContext, ApiEvent } from '../../../shared/api.interfaces';
-import { ErrorCode } from '../../../shared/error-codes';
-import { handleError } from '../../../shared/error-handler';
-import { ResponseBuilder } from '../../../shared/response-builder';
+import { ApiCallback, ApiContext, ApiEvent } from '../../shared/api.interfaces';
+import { ErrorCode } from '../../shared/error-codes';
+import { handleError } from '../../shared/error-handler';
+import { ResponseBuilder } from '../../shared/response-builder';
 import { GetArticleResult } from '../articles.interfaces';
 import { ArticlesService } from '../articles.service';
 

@@ -1,4 +1,4 @@
-import { ApiHandler } from '../../shared/api.interfaces';
+import { ApiHandler } from '../shared/api.interfaces';
 import { ArticlesController } from './articles.controller';
 import { ArticlesRepository } from './articles.repository';
 import { ArticlesService } from './articles.service';

@@ -1,4 +1,4 @@
-import { unmarshal } from '../../../shared/helper-functions';
+import { unmarshal } from '../../shared/helper-functions';
 import { Article, GetArticleResult, GetArticlesResult, RelatedArticle } from '../articles.interfaces';
 import { ArticlesRepository } from '../articles.repository';
 

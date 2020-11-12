@@ -1,6 +1,6 @@
 import {
   ApiCallback, ApiContext, ApiEvent
-} from '../../shared/api.interfaces';
+} from '../shared/api.interfaces';
 import { CommentsService } from './comments.service';
 import { CreateCommentController } from './controllerUseCases/createComment';
 import { DeleteCommentController } from './controllerUseCases/deleteComment';

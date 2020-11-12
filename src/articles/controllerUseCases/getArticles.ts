@@ -1,6 +1,6 @@
-import { ApiCallback, ApiContext, ApiEvent } from '../../../shared/api.interfaces';
-import { handleError } from '../../../shared/error-handler';
-import { ResponseBuilder } from '../../../shared/response-builder';
+import { ApiCallback, ApiContext, ApiEvent } from '../../shared/api.interfaces';
+import { handleError } from '../../shared/error-handler';
+import { ResponseBuilder } from '../../shared/response-builder';
 import { GetArticlesResult } from '../articles.interfaces';
 import { ArticlesService } from '../articles.service';
 

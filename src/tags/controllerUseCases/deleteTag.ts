@@ -1,7 +1,7 @@
-import { ApiCallback, ApiContext, ApiEvent } from '../../../shared/api.interfaces';
-import { ErrorCode } from '../../../shared/error-codes';
-import { handleError } from '../../../shared/error-handler';
-import { ResponseBuilder } from '../../../shared/response-builder';
+import { ApiCallback, ApiContext, ApiEvent } from '../../shared/api.interfaces';
+import { ErrorCode } from '../../shared/error-codes';
+import { handleError } from '../../shared/error-handler';
+import { ResponseBuilder } from '../../shared/response-builder';
 import { DeleteTagResult } from '../tags.interfaces';
 import { TagsService } from '../tags.service';
 

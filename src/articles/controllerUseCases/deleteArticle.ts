@@ -1,7 +1,7 @@
-import { ApiCallback, ApiContext, ApiEvent } from '../../../shared/api.interfaces';
-import { ErrorCode } from '../../../shared/error-codes';
-import { handleError } from '../../../shared/error-handler';
-import { ResponseBuilder } from '../../../shared/response-builder';
+import { ApiCallback, ApiContext, ApiEvent } from '../../shared/api.interfaces';
+import { ErrorCode } from '../../shared/error-codes';
+import { handleError } from '../../shared/error-handler';
+import { ResponseBuilder } from '../../shared/response-builder';
 import { CommentsService } from '../../comments/comments.service';
 import { TagsService } from '../../tags/tags.service';
 import {  DeleteArticleResult, GetArticleResult } from '../articles.interfaces';

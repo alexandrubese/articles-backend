@@ -1,4 +1,4 @@
-import { ApiResponse, ErrorResponseBody } from '../shared/api.interfaces';
+import { ApiResponse, ErrorResponseBody } from '../src/shared/api.interfaces';
 
 export interface ApiResponseParsed<T> extends ApiResponse {
   parsedBody: T;

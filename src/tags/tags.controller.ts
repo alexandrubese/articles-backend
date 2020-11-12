@@ -1,6 +1,6 @@
 import {
   ApiCallback, ApiContext, ApiEvent
-} from '../../shared/api.interfaces';
+} from '../shared/api.interfaces';
 import { CreateTagController } from './controllerUseCases/createTag';
 import { CreateTagArticleController } from './controllerUseCases/createTagArticle';
 import { DeleteTagController } from './controllerUseCases/deleteTag';

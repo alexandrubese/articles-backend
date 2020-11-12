@@ -1,6 +1,6 @@
 import {
   ApiCallback, ApiContext, ApiEvent
-} from '../../shared/api.interfaces';
+} from '../shared/api.interfaces';
 import { CommentsService } from '../comments/comments.service';
 import { TagsService } from '../tags/tags.service';
 import { ArticlesService } from './articles.service';

@@ -1,9 +1,9 @@
-import { ApiCallback, ApiContext, ApiEvent } from '../../../shared/api.interfaces';
-import { ErrorCode } from '../../../shared/error-codes';
-import { handleError } from '../../../shared/error-handler';
-import { ResponseBuilder } from '../../../shared/response-builder';
-import { SubjectType } from '../../../shared/validators/error.interface';
-import { validate } from '../../../shared/validators/validator';
+import { ApiCallback, ApiContext, ApiEvent } from '../../shared/api.interfaces';
+import { ErrorCode } from '../../shared/error-codes';
+import { handleError } from '../../shared/error-handler';
+import { ResponseBuilder } from '../../shared/response-builder';
+import { SubjectType } from '../../shared/validators/error.interface';
+import { validate } from '../../shared/validators/validator';
 import { TagArticleInputs } from '../../tags/tags.interfaces';
 import { TagsService } from '../../tags/tags.service';
 import { ArticleInputs, GetArticleResult } from '../articles.interfaces';

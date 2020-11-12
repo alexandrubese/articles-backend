@@ -1,4 +1,4 @@
-import { ApiHandler } from '../../shared/api.interfaces';
+import { ApiHandler } from '../shared/api.interfaces';
 import { CommentsController } from './comments.controller';
 import { CommentsRepository } from './comments.repository';
 import { CommentsService } from './comments.service';

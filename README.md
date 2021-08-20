@@ -16,7 +16,6 @@ For local development:
 0.1 go to http://localhost:8002/shell/ and run dynamo_queries/test_articles.js and dynamo_queries/test_articles_Data.js so that you have data in the database
 0.2 make sure you have redis-server installed locally on your machine (https://redis.io/topics/quickstart)
 0.3 connect to local redis: redis-cli -h localhost -p 6379
-1. start the local-dynamodb: npm run local-dynamodb
 2. start the local serverless instance: npm start (or your debug configuration with "npm start" for debugging)
 
 Things to do: 

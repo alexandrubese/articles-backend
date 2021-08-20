@@ -2,6 +2,7 @@ import * as DynamoDB from 'aws-sdk/clients/dynamodb' ;
 import { AWSError } from 'aws-sdk/lib/error';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { DynamoService } from '../../shared/dynamo-service';
+import { RedisService } from './../../shared/redis-service';
 import { unmarshal } from '../../shared/helper-functions';
 import { Comment } from '../../comments/comments.interfaces';
 import { Article, GetArticleResult } from '../articles.interfaces';
@@ -15,6 +16,12 @@ export class GetArticleUseCase {
 
     public execute = async (articleId: string): Promise<GetArticleResult> => {
       try {
+        const cachedArticle = await RedisService.getCachedValue(articleId) as Article;
+
+        if(cachedArticle) {
+          return { item: cachedArticle };
+        }
+
         const params: DynamoDB.QueryInput = {
           TableName: 'test_articles',
           IndexName: 'gsi1_idx',
@@ -48,6 +55,8 @@ export class GetArticleUseCase {
           comments: articleComments
         };
     
+        await RedisService.setCacheValue(articleId, article);
+
         const result: GetArticleResult = { item: article };
         return result;
     

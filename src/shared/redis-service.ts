@@ -5,7 +5,7 @@ export class RedisService {
     private static timeSeconds = 'ex'
     /* @ts-ignore */
     private static timeMiliseconds = 'px'
-    private static interval = 30
+    private static interval = 10
 
     constructor() {
       if (!RedisService.instance) {

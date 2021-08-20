@@ -5,8 +5,9 @@ jspm_packages
 .nyc_output
 .dynamodb
 .idea
+.DS_Store
 local-dynamodb/*.*
-dump.rdb
+local-redis/*.*
 !/**/.gitkeep
 # Serverless directories
 .serverless

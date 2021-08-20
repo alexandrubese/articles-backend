@@ -322,11 +322,8 @@ custom:
       port: 8002
       optimizeDbBeforeStartup: true
       dbPath: ${env:PWD}/local-dynamodb
-      
-  custom:
-    redis:
-      port: 6379
-      bin: ${env:PWD}/local-redis
+  redis:
+    port: 6379
       
 #custom:
   #documentation: ${file(./swagger/documentation.yml)}

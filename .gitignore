@@ -8,6 +8,7 @@ jspm_packages
 .DS_Store
 local-dynamodb/*.*
 local-redis/*.*
+dump.rdb
 !/**/.gitkeep
 # Serverless directories
 .serverless

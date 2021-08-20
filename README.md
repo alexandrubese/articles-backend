@@ -12,6 +12,7 @@ serverless config credentials --provider aws --key {KEY} --secret {SECRET} --pro
 The serverlesUser profile is linked in the serverless.yml file, so if you change the profile name, make sure to update the serverless.yml file as well.
 
 For local development:
+0. sls dynamodb install
 1. start the local-dynamodb: npm run local-dynamodb
 2. start the local serverless instance: npm start (or your debug configuration with "npm start" for debugging)
 

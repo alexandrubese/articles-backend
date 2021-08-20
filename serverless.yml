@@ -171,7 +171,7 @@ functions:
           cors: true
 
   putComment:
-    handler: src/comments/comments.putComments
+    handler: src/comments/comments.createComment
     description: Insert a new comment
     memorySize: 128
     timeout: 10

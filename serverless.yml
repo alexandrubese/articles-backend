@@ -32,16 +32,12 @@ provider:
         - "apigateway:GET"
       Resource:
         - "arn:aws:apigateway:${self:provider.region}::/restapis*"
-dynamodb:
-    start:
-      port: 8002
-      inMemory: true
-      migrate: true
 
 plugins:
   - serverless-offline
   - serverless-plugin-typescript
   - serverless-dynamodb-local
+  - serverless-offline-redis-server
   #- serverless-aws-documentation
   #- serverless-domain-manager   #these two dependencies go with setup of custom domain
   #- serverless-stack-output
@@ -325,7 +321,11 @@ custom:
     start:
       port: 8002
       optimizeDbBeforeStartup: true
-      dbPath: ./local-dynamodb
+      dbPath: 'local-dynamodb'
+  custom:
+    redis:
+      port: 6379
+      bin: './local-redis'
       
 #custom:
   #documentation: ${file(./swagger/documentation.yml)}

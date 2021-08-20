@@ -6,6 +6,7 @@ jspm_packages
 .dynamodb
 .idea
 local-dynamodb/*.*
-
+dump.rdb
+!/**/.gitkeep
 # Serverless directories
 .serverless

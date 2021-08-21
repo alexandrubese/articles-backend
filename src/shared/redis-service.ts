@@ -2,10 +2,10 @@ import IORedis, * as Redis from 'ioredis';
 
 export class RedisService {
     private static instance: IORedis.Redis;
-    private static timeSeconds = 'ex'
+    private timeSeconds = 'ex'
     /* @ts-ignore */
-    private static timeMiliseconds = 'px'
-    private static interval = 10
+    private timeMiliseconds = 'px'
+    private interval = 10
 
     constructor() {
       if (!RedisService.instance) {
@@ -17,25 +17,25 @@ export class RedisService {
       return RedisService.instance;
     }
 
-    public static async setCacheValue(
+    public async setCacheValue(
       key: string, 
       value: object, 
       intervalType: string = this.timeSeconds, 
       intervalTime: number = this.interval
     ) {
-      const redisInstance = new RedisService().getInstance();
+      const redisInstance = this.getInstance();
       return await redisInstance.set(key, JSON.stringify(value), intervalType, intervalTime);
     }
 
-    public static async getCachedValue(key: string) {
-      const redisInstance = new RedisService().getInstance();
+    public async getCachedValue(key: string) {
+      const redisInstance = this.getInstance();
       const keyValue = await redisInstance.get(key);
 
       return keyValue ? JSON.parse(keyValue) : '';       
     }
 
-    public static async deleteCachedValue(key: string) {
-      const redisInstance = new RedisService().getInstance();
+    public async deleteCachedValue(key: string) {
+      const redisInstance = this.getInstance();
       return await redisInstance.del(key);   
     }
 }

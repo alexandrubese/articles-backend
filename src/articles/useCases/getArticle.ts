@@ -9,19 +9,20 @@ import { Article, GetArticleResult } from '../articles.interfaces';
 
 export class GetArticleUseCase {
     private readonly dbInstance: DynamoDB;
+    private readonly redisService: RedisService;
 
     constructor() {
       this.dbInstance = new DynamoService().getInstance();
+      this.redisService = new RedisService();
     }
 
     public execute = async (articleId: string): Promise<GetArticleResult> => {
       try {
-        const cachedArticle = await RedisService.getCachedValue(articleId) as Article;
+        const cachedArticle = await this.redisService.getCachedValue(articleId) as Article;
 
         if(cachedArticle) {
           return { item: cachedArticle };
         }
-
         const params: DynamoDB.QueryInput = {
           TableName: 'test_articles',
           IndexName: 'gsi1_idx',
@@ -55,7 +56,7 @@ export class GetArticleUseCase {
           comments: articleComments
         };
     
-        await RedisService.setCacheValue(articleId, article);
+        await this.redisService.setCacheValue(articleId, article);
 
         const result: GetArticleResult = { item: article };
         return result;

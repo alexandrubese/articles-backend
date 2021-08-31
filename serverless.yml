@@ -344,8 +344,13 @@ custom:
 #for fast speed use serverless-jetpack (https://www.npmjs.com/package/serverless-jetpack#the-short-short-version)
 
 # Add this to config:
+
 # plugins:
 #  - serverless-jetpack
+
+#custom:
+#  serverless-jetpack:
+#    mode: npm # (default `yarn`)
 
 #https://www.serverless.com/framework/docs/providers/aws/guide/layers/
 #https://forum.serverless.com/t/aws-lambda-layers-node-modules-not-working/7914/4
@@ -361,3 +366,12 @@ custom:
 #      - {Ref: NodemsLambdaLayer}
 #    events: ...
 #      - http: ...
+
+
+# ---- For Optimization ---- 
+
+# use serverless-plugin-optimize package (https://www.npmjs.com/package/serverless-plugin-optimize)
+
+# Add this to config:
+#plugins:
+#  - serverless-plugin-optimize

@@ -375,3 +375,19 @@ custom:
 # Add this to config:
 #plugins:
 #  - serverless-plugin-optimize
+
+
+# ---- Another Approach that doesnt use lambda layers, but it includes only used node_modules in each function -----
+#
+# Include only dependencies that are used in a lambda
+#plugins:
+#  - serverless-plugin-include-dependencies
+#
+# We can exclude aws-sdk since its already in awws lambda
+#
+#package:
+#  individually: true
+#  patterns:
+#    - '!node_modules/aws-sdk/**'
+#
+#

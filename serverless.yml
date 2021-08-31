@@ -335,3 +335,29 @@ custom:
     #createRoute53Record: true
   #output:
     #file: .serverless/output.json
+
+
+
+
+# ---- !important Lambda layers and packaging node_modules separatelly ----- 
+
+#for fast speed use serverless-jetpack (https://www.npmjs.com/package/serverless-jetpack#the-short-short-version)
+
+# Add this to config:
+# plugins:
+#  - serverless-jetpack
+
+#https://www.serverless.com/framework/docs/providers/aws/guide/layers/
+#https://forum.serverless.com/t/aws-lambda-layers-node-modules-not-working/7914/4
+#
+#layers:
+#  Nodems:
+#    path: node_modules
+
+#functions:
+#  myFunc:
+#    handler: path-to-func
+#    layers:
+#      - {Ref: NodemsLambdaLayer}
+#    events: ...
+#      - http: ...

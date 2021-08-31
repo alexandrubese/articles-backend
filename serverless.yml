@@ -339,8 +339,8 @@ custom:
 
 
 
-# ---- !important Lambda layers and packaging node_modules separatelly ----- 
 
+# ---- !important for fast bundling ----- 
 #for fast speed use serverless-jetpack (https://www.npmjs.com/package/serverless-jetpack#the-short-short-version)
 
 # Add this to config:
@@ -352,6 +352,8 @@ custom:
 #  serverless-jetpack:
 #    mode: npm # (default `yarn`)
 
+
+# ---- !important Lambda layers and packaging node_modules separatelly ----- 
 #https://www.serverless.com/framework/docs/providers/aws/guide/layers/
 #https://forum.serverless.com/t/aws-lambda-layers-node-modules-not-working/7914/4
 #
@@ -367,16 +369,6 @@ custom:
 #    events: ...
 #      - http: ...
 
-
-# ---- For Optimization ---- 
-
-# use serverless-plugin-optimize package (https://www.npmjs.com/package/serverless-plugin-optimize)
-
-# Add this to config:
-#plugins:
-#  - serverless-plugin-optimize
-
-
 # ---- Another Approach that doesnt use lambda layers, but it includes only used node_modules in each function -----
 #
 # Include only dependencies that are used in a lambda
@@ -391,3 +383,10 @@ custom:
 #    - '!node_modules/aws-sdk/**'
 #
 #
+# ---- For Optimization ---- 
+
+# use serverless-plugin-optimize package (https://www.npmjs.com/package/serverless-plugin-optimize)
+
+# Add this to config:
+#plugins:
+#  - serverless-plugin-optimize
